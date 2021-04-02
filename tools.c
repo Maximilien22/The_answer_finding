@@ -15,8 +15,7 @@ Graph *iniGraph (int order)
 	graph->order = order;
 	graph->adjlists = malloc(sizeof(Couple_list) * (graph->order) );
 
-	for (int i = 0; i < (graph->order); i++)
-	{
+	for (int i = 0; i < (graph->order); i++){
 		graph->adjlists[i] = iniCoupleList();
 	}
 
@@ -25,11 +24,12 @@ Graph *iniGraph (int order)
 	return graph;
 }
 
-
+//TODO : faire load
+//TODO : faire les free
 char* todot(Graph *G){
 	
     char* link = " -- ";
-    char * dot = malloc ( 100000000 );
+    char * dot = malloc ( 100000000 );//TODO ca c'est pas bien
 
     strcat(dot, "graph {\n");
         
