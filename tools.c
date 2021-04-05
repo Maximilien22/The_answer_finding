@@ -13,16 +13,41 @@ Graph *iniGraph (int order)
 	Graph *graph = malloc(sizeof(Graph));
  
 	graph->order = order;
-	graph->adjlists = malloc(sizeof(Couple_list) * (graph->order) );
+	graph->adjlists = calloc(graph->order, sizeof(Couple_list));
 
-	for (int i = 0; i < (graph->order); i++){
-		graph->adjlists[i] = iniCoupleList();
-	}
-
+	
 	graph->pos = malloc(sizeof(Couple) * graph->order); // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
 
 	return graph;
 }
+
+void __addOneEdge(Graph* G, int s_from, int s_to){
+
+	Couple_list * cp = G->adjlists[s_from];
+
+	Couple_list* new_list = iniCoupleList();
+	new_list->value = s_to;
+	new_list->next = NULL;
+
+	if (cp == NULL){ // TODO ca ca marche pas je crois, pck ca verifie le pointeur pas que la valeur = 00000000
+		cp = new_list;
+	}else{
+		while ( cp->next!= NULL){
+			cp = cp->next;
+		}
+		cp->next = new_list;
+	}
+
+}
+
+void addEdge(Graph* G,int s1,int s2)
+{
+	__addOneEdge(G, s1, s2);
+	if (s1 != s2)
+		__addOneEdge(G, s2, s1);
+
+}
+
 
 //TODO : faire load
 //TODO : faire les free
@@ -91,7 +116,7 @@ Couple_list* iniCoupleList()
 	Couple_list *list = malloc(sizeof(Couple_list));
 	
 	list->next = NULL;
-	list->value = 0;
+	list->value = -1;
 
 	return list;
 }
@@ -115,42 +140,16 @@ int length(Couple_list *list){
 }
 
 
-int main(){ 
+/*int main(){ 
 
 	Graph * g = iniGraph(3);
 
-	g->pos[0] = iniCouple(545454,84848);
-	g->pos[1] = iniCouple(54,0.55);
-	g->pos[2] = iniCouple(-51.5,2652);
+	//g->pos[0] = iniCouple(545454,84848);
+	//g->pos[1] = iniCouple(54,0.55);
+	//g->pos[2] = iniCouple(-51.5,2652);
 
-
-	Couple_list* l6 =iniCoupleList();
-	l6->next = NULL;
-	l6->value = 1;
-
-	Couple_list* l =iniCoupleList();
-	l->next = l6;
-	l->value = 2;
-	g->adjlists[0] = l;
-
-	Couple_list* l4 =iniCoupleList();
-	l4->next = NULL;
-	l4->value = 0;
-	Couple_list* l1 =iniCoupleList();
-	l1->next = l4;
-	l1->value = 2;
-
-	g->adjlists[1] = l1;
-
-
-	Couple_list* l5 =iniCoupleList();
-	l5->next = NULL;
-	l5->value = 1;
-
-	Couple_list* l2 =iniCoupleList();
-	l2->next = l5;
-	l2->value = 0;
-	g->adjlists[2] = l2;
+	//addEdge(g, 0,1);
+	//addEdge(g, 2,2);
 
 	printf("%s\n",todot(g));
-}
+}*/
