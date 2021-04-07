@@ -41,6 +41,9 @@ struct Graph
 	      
 };
 Graph *iniGraph(int order);
+void addEdge(Graph* G,int s1,int s2);
+void freeCoupleList(Couple_list *Cpl);
+void freeGraph(Graph* G);
 char* todot(Graph *G);
 
 
