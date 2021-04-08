@@ -1,0 +1,36 @@
+.u-section-1 {
+  background-image: url("images/rfr-min.jpg");
+  background-position: 100% 50%;
+}
+
+.u-section-1 .u-sheet-1 {
+  min-height: 818px;
+}
+
+@media (max-width: 1199px) {
+  .u-section-1 .u-sheet-1 {
+    min-height: 674px;
+  }
+}
+
+@media (max-width: 991px) {
+  .u-section-1 .u-sheet-1 {
+    min-height: 644px;
+  }
+}
+
+@media (max-width: 767px) {
+  .u-section-1 .u-sheet-1 {
+    min-height: 615px;
+  }
+}
+
+@media (max-width: 575px) {
+  .u-section-1 {
+    background-position: 65.32% 50%;
+  }
+
+  .u-section-1 .u-sheet-1 {
+    min-height: 558px;
+  }
+}
