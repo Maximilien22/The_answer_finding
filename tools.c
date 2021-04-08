@@ -16,8 +16,9 @@ Graph *iniGraph (int order)
 	graph->order = order;
 	graph->adjlists = calloc(graph->order, sizeof(Couple_list));
 	
-	graph->pos = malloc(sizeof(Couple) * graph->order); // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
-
+	//graph->pos = malloc(sizeof(Couple) * graph->order); // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
+	for(int i =0; i<order; i++)
+		graph->adjlists[i] = NULL;
 	return graph;
 }
 
@@ -44,6 +45,9 @@ void __addOneEdge(Graph* G, int s_from, int s_to){
 
 void addEdge(Graph* G,int s1,int s2)
 {
+	if(s1 == -1 || s2 == -1)
+		return;
+	
 	__addOneEdge(G, s1, s2);
 	if (s1 != s2)
 		__addOneEdge(G, s2, s1);
@@ -54,7 +58,7 @@ void addEdge(Graph* G,int s1,int s2)
 char* todot(Graph *G){
 	
     char* link = " -- ";
-    char * dot = malloc (10000000);
+    char * dot = calloc (1000000,sizeof(char));
 
     strcat(dot, "graph {\n");
         
@@ -159,28 +163,23 @@ void freeGraph(Graph* G)
 			freeCoupleList(G->adjlists[i]);
 	}
 	free(G->adjlists);
-	for (int i=0; i<G->order; i++){
-		free(G->pos[i]);
-	}
-	free(G->pos);
+	//for (int i=0; i<G->order; i++){
+		//free(G->pos[i]);
+	//}
+	//free(G->pos);
 	free(G);
 }
 
 /*int main(){ 
-
 	Graph * g = iniGraph(3);
-
 	g->pos[0] = iniCouple(545454,84848);
 	g->pos[1] = iniCouple(54,0.55);
 	g->pos[2] = iniCouple(-51.5,2652);
-
 	addEdge(g, 0,1);
 	addEdge(g, 2,2);
 	addEdge(g, 2,1);
-
 	char* td = todot(g);
 	printf("%s\n",td);
-
 	free(td);
 	freeGraph(g);
 }*/

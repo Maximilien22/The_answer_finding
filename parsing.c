@@ -21,13 +21,15 @@
 
 #define flags_nb 9
 
-#define NB_SOMMETS 10
+#define NB_SOMMETS 1000000
+
+#define file_name "nearpita.osm"
 
 GraphInfo * iniGraphInfo(){
-	GraphInfo * gInfo = malloc(sizeof(GraphInfo));
+	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
 	
 	gInfo->idx = 0;
-	gInfo->correspondance = malloc(sizeof(unsigned long)* NB_SOMMETS);
+	gInfo->correspondance = calloc(NB_SOMMETS, sizeof(unsigned long));
 	//gInfo->pos = malloc(sizeof(Couple)*NB_SOMMETS);
 
 	return gInfo;
@@ -80,7 +82,7 @@ void search_for_node(char c, int* node_flags ){
 GraphInfo * create_correspondance(){
 
 	FILE * fichier;
-	fichier = fopen("epita.osm", "r");
+	fichier = fopen(file_name, "r");
 	unsigned long currId = 0; 
 
 	char c = fgetc(fichier);
@@ -137,6 +139,7 @@ int getCorrespondingId(int size, unsigned long * correspondance, unsigned long i
 
 		i++;
 	}
+	return -1;
 }
 
 void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size){
@@ -149,8 +152,8 @@ void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size){
 GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 
 	FILE * fichier;
-	fichier = fopen("epita.osm", "r");
-	int nodes_of_way_size = 100;
+	fichier = fopen(file_name, "r");
+	int nodes_of_way_size = 1000;
 
 	char c = fgetc(fichier);
 
@@ -249,16 +252,12 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 	return gInfo;
 }
 
-void create_edges(Graph* G, GraphInfo* gInfo)
-{
-	// faire add edge
-	// Trouver les ways, lire les noeuds
-	// Lire les correspondances et faire des add_edges
-}
+
 
 Graph* create_graph(GraphInfo* gInfo)
 {
 	Graph * G = iniGraph(gInfo->idx);
+	return G;
 }
 
 void freeGraphInfo(GraphInfo * gInfo){
@@ -281,9 +280,9 @@ int main (){
 
 	create_way(gInfo, g);
 
-	for (int i=0; i<NB_SOMMETS; i++){
+	/*for (int i=0; i<NB_SOMMETS; i++){
 		printf("[%lu] ",gInfo->correspondance[i] );
-	}
+	}*/
 	printf("\n");
 	
 	printf("\n\nidx : %i\n",gInfo->idx);
