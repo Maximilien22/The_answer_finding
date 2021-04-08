@@ -39,8 +39,8 @@ graph.Graph.addedge(G1,4,2,801)
 #Link to Ville Folle
 graph.Graph.addedge(G1,5,1,350)
 
-start = 4
-goal = 5
+start = 5
+goal = 4
 
 #_______________ALGO DIJKSTRA_______________
 l = Dijkstra.Dijkstra(G1, start )

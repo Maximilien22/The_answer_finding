@@ -57,9 +57,6 @@ def Dijkstra(G, start) :
         del M[del_elem(M,e)]
 
         for adj in G.adjlists[e] :
-            #if dist[adj[0]] == -1 :
-            #dist[adj[0]] = dist[e] + cost(G,e,adj[0])
-            # pred[adj[0]] = e
             if  dist[adj[0]] == -1 or dist[e] + cost(G,e,adj[0]) < dist[adj[0]]:
                 dist[adj[0]] = dist[e] + cost(G,e,adj[0])
                 pred[adj[0]] = e
