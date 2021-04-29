@@ -14,9 +14,9 @@ Graph *iniGraph (int order)
 	Graph *graph = malloc(sizeof(Graph));
  
 	graph->order = order;
-	graph->adjlists = calloc(graph->order, sizeof(Couple_list));
+	graph->adjlists = calloc(graph->order, sizeof(Value_list));
 	
-	//graph->pos = malloc(sizeof(Couple) * graph->order); // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
+	//graph->pos = ; // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
 	for(int i =0; i<order; i++)
 		graph->adjlists[i] = NULL;
 	return graph;
@@ -24,10 +24,10 @@ Graph *iniGraph (int order)
 
 void __addOneEdge(Graph* G, int s_from, int s_to){
 
-	Couple_list ** cp;
+	Value_list ** cp;
 	cp = &(G->adjlists[s_from]);
 
-	Couple_list* new_list = iniCoupleList();
+	Value_list* new_list = iniValueList();
 	new_list->value = s_to;
 	//new_list->next = NULL;
 
@@ -75,7 +75,7 @@ char* todot(Graph *G){
     	strcat(dot, "\n");
         
 
-        Couple_list * currElement = G->adjlists[s];
+        Value_list * currElement = G->adjlists[s];
         while (currElement != NULL){
         	int adj = currElement->value;
 
@@ -115,10 +115,19 @@ Couple *iniCouple (float x, float y)
 	return couple;
 }
 
-
 Couple_list* iniCoupleList()
 {
 	Couple_list *list = malloc(sizeof(Couple_list));
+	
+	list->next = NULL;
+	list->couple = iniCouple(-1, -1);
+
+	return list;
+}
+
+Value_list* iniValueList()
+{
+	Value_list *list = malloc(sizeof(Value_list));
 	
 	list->next = NULL;
 	list->value = -1;
@@ -127,13 +136,13 @@ Couple_list* iniCoupleList()
 }
 
 
-int length(Couple_list *list){
+int length(Value_list *list){
 	if (list==NULL || list->value == 0)
 		return 0;
 	else
 	{
 		int len = 0;
-		Couple_list* currElement = list;
+		Value_list* currElement = list;
 
 		while (currElement!=NULL){
 			len++;
@@ -144,15 +153,28 @@ int length(Couple_list *list){
 
 }
 
+void freeValueList(Value_list *Cpl)
+{
+	if(Cpl == NULL)
+		err(1,"Error while trying to free Value_list");
+
+	if (Cpl->next != NULL){
+		freeValueList(Cpl->next);
+	}
+	free(Cpl);
+}
+
 void freeCoupleList(Couple_list *Cpl)
 {
 	if(Cpl == NULL)
-		err(1,"Error while trying to free CoupleList");
+		err(1,"Error while trying to free Couple_list");
 
 	if (Cpl->next != NULL){
 		freeCoupleList(Cpl->next);
 	}
+	free(Cpl->couple);
 	free(Cpl);
+
 }
 
 void freeGraph(Graph* G)
@@ -160,7 +182,7 @@ void freeGraph(Graph* G)
  	for(int i = 0; i<G->order; i++)
  	{
  		if(G->adjlists[i] != NULL)
-			freeCoupleList(G->adjlists[i]);
+			freeValueList(G->adjlists[i]);
 	}
 	free(G->adjlists);
 	//for (int i=0; i<G->order; i++){

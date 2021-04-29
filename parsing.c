@@ -18,8 +18,13 @@
 #define l_read 6
 #define n_read 7
 #define in_node 8
+#define equal_read 9
+#define o_read 10
+#define reading_lat 11
+#define reading_lon 12
+#define coma_read 13
 
-#define flags_nb 9
+#define flags_nb 14
 
 #define NB_SOMMETS 1000000
 
@@ -30,7 +35,7 @@ GraphInfo * iniGraphInfo(){
 	
 	gInfo->idx = 0;
 	gInfo->correspondance = calloc(NB_SOMMETS, sizeof(unsigned long));
-	//gInfo->pos = malloc(sizeof(Couple)*NB_SOMMETS);
+	gInfo->pos = iniCoupleList();
 
 	return gInfo;
 }
@@ -44,22 +49,141 @@ int isNumber( char c){
 	return c>='0' && c<='9';
 }
 
-void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currId){
+void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currId, float* currLat, float* currLon, int* divider){
+	
+	if (node_flags[reading_lat]){
+		if (c == '.'){
+			node_flags[coma_read]=1;
+		}
+		else if (isNumber(c)){
+			//printf("lat : %c\n", c);
+			if (!node_flags[coma_read]){
+				(*currLat)*=10;
+				(*currLat)+=(c-'0');
+			}else{
+				(*currLat) += (float) (c-'0')/(*divider);
+				(*divider) *=10;
+
+			}
+
+		}else if (c==' '){
+			printf("je viens de lire la lat : %f\n", *currLat);
+			//TODO : l'ajouter a GraphInfo
+			node_flags[l_read] = 0;
+			node_flags[a_read] = 0;
+			node_flags[t_read] = 0;
+			node_flags[equal_read] = 0;
+			node_flags[reading_lat] = 0;
+			node_flags[coma_read]= 0;
+			*divider =10;
+			*currLat =0.0;
+		}
+	}
+	
+	if (node_flags[reading_lon]){
+		if (c == '.'){
+			node_flags[coma_read]=1;
+		}else if (isNumber(c)){
+			//printf("lon : %c\n",c );
+			if (!node_flags[coma_read]){
+				(*currLon)*=10;
+				(*currLon)+=(c-'0');
+			}else{
+				(*currLon) += (float) (c-'0')/(*divider);
+				(*divider)*=10;
+			}
+
+		}else if (c=='/' || c=='>'){
+			printf("je viens de lire la lon : %f\n", *currLon);
+			//TODO : l'ajouter a GraphInfo
+			node_flags[l_read] = 0;
+			node_flags[o_read] = 0;
+			node_flags[n_read] = 0;
+			node_flags[equal_read] = 0;
+			node_flags[reading_lon] = 0;
+			node_flags[coma_read]= 0;
+			*divider =10;
+			*currLon = 0.0;
+
+			
+		}
+	}
+
+	if (isNumber(c) && node_flags[reading_id]){
+		(*currId) *= 10;
+		(*currId) += (c-'0');
+	}
+
 	if (c=='i' &&  ! node_flags[reading_id] && ! node_flags[id_done] ){
 		node_flags[reading_id] = 1;
 	}
-	if (isNumber(c) && node_flags[reading_id]){
-		(*currId) *= 10;
-		(*currId) += (c-'0') ;
-	}
 
-	if (node_flags[reading_id] && c==' '){
+	else if (node_flags[reading_id] && c==' '){
 		node_flags[reading_id] = 0;
 		node_flags[id_done] = 1;
 		gInfo->correspondance[(gInfo->idx)] = *currId;
 		(gInfo->idx)+=1;
 		*currId = 0;
 	}
+
+	else if (node_flags[t_read]){
+		if (c=='='){
+			node_flags[reading_lat] = 1;
+		}else{
+			node_flags[l_read] = 0;
+			node_flags[a_read] = 0;
+			node_flags[t_read] = 0;
+		}
+
+	}
+
+	else if (node_flags[n_read]){
+		if (c=='='){
+			node_flags[reading_lon] = 1;
+		}else{
+			node_flags[l_read] = 0;
+			node_flags[o_read] = 0;
+			node_flags[n_read] = 0;
+		}
+
+	}
+
+
+	else if (node_flags[o_read] ){
+		if (c=='n'){
+			node_flags[n_read] = 1;
+		}else{
+			node_flags[o_read] = 0;
+			node_flags[l_read] = 0;
+		}
+	}
+
+	else if (node_flags[a_read] ){
+		if (c=='t'){
+			node_flags[t_read] = 1;
+			//printf("t : \n");
+		}else{
+			node_flags[l_read] = 0;
+			node_flags[a_read] = 0;
+		}
+	}
+
+	else if (node_flags[l_read]){
+		if (c=='o'){
+			node_flags[o_read] = 1;
+		}else if (c=='a'){
+			node_flags[a_read] = 1;
+
+		}else{
+			node_flags[l_read] = 0;
+		}
+	}
+	
+	else if (c=='l'){
+		node_flags[l_read] = 1;
+		//printf("l : \n");
+	}
+	
 }
 
 
@@ -84,6 +208,9 @@ GraphInfo * create_correspondance(){
 	FILE * fichier;
 	fichier = fopen(file_name, "r");
 	unsigned long currId = 0; 
+	float currLat = 0; 
+	float currLon = 0; 
+	int divider = 10;
 
 	char c = fgetc(fichier);
 
@@ -109,7 +236,8 @@ GraphInfo * create_correspondance(){
       		if (! (node_flags[in_node]) ){
       			search_for_node(c, node_flags);
       		}else{
-      			create_node(c, gInfo, node_flags, &currId);
+      			create_node(c, gInfo, node_flags, &currId, &currLat, &currLon, &divider);
+      			//printf("%c",c );
       		}
 
       		if (c=='>' && node_flags[in_node]){
@@ -267,6 +395,7 @@ void freeGraphInfo(GraphInfo * gInfo){
 	}*/
 	//free(gInfo->pos);
 	free(gInfo->correspondance);
+	freeCoupleList(gInfo->pos);
 	free(gInfo);
 	
 }
@@ -288,7 +417,7 @@ int main (){
 	printf("\n\nidx : %i\n",gInfo->idx);
 
 	char * td = todot(g);
-	printf("%s\n",td);
+	//printf("%s\n",td);
 	free(td);
 
 	freeGraphInfo(gInfo);
@@ -300,7 +429,11 @@ int main (){
 // tableau de correspondance entre id des noeuds et index dans adjlists
 // parcourir toutes les ways et connectée les nodes 2 a 2
 
-//TODO : faire des allocations dynamique de memoire
-//TODO allocation dynamique dans todot
-//TODO : cree les nodes avec pos et adapter les free
+//TODO : faire des allocations dynamique de memoire dans todot et correspondance list
+
+//TODO : ajouter les pos (aqjouter a graph info et etre plus precis)
+
+//TODO : ajouter les names aux noeuds ( soit direct dans node, ou si dans way, ajouter au premier noeud),
+// pr ensuite pouvoir faire un parcours de place danton a restaurant l'inattendu par ex
+
 //TODO : verifier que les users n'ai pas de < ou de =

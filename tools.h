@@ -6,8 +6,8 @@
 typedef struct Couple Couple;
 struct Couple
 {	
-	int x;
-	int y;
+	float x;
+	float y;
 	      
 };
 Couple *iniCouple (float x, float y);
@@ -16,12 +16,24 @@ Couple *iniCouple (float x, float y);
 typedef struct Couple_list Couple_list;
 struct Couple_list
 {
-	   int value;
+	   Couple* couple;
 	   Couple_list *next;
 };
 
+
+//---------VALUE LIST----------------
+typedef struct Value_list Value_list;
+struct Value_list
+{
+	   int value;
+	   Value_list *next;
+};
+
 Couple_list *iniCoupleList();
-int length(Couple_list *list);
+Value_list *iniValueList();
+
+//int length(Couple_list *list);
+
 /*float float_get(Float_list *list, int index);
 void float_set(Float_list *list, int index, float value);
 void float_append(Float_list *list, float nb);
@@ -36,13 +48,15 @@ typedef struct Graph Graph;// now, rather that typing 'struc Graph' every time, 
 struct Graph
 {	
 	int order;
-	Couple_list** adjlists;
-	Couple** pos;
+	Value_list** adjlists;
+	//Couple_list* pos;
+	// un name pr charque node
 	      
 };
 Graph *iniGraph(int order);
 void addEdge(Graph* G,int s1,int s2);
 void freeCoupleList(Couple_list *Cpl);
+void freeValueList(Value_list *Vlist);
 void freeGraph(Graph* G);
 char* todot(Graph *G);
 
