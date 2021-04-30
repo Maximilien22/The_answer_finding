@@ -104,7 +104,7 @@ char* todot(Graph *G){
 }
 
 
-Couple *iniCouple (float x, float y)
+Couple *iniCouple (double x, double y)
 {
 
 	Couple *couple = malloc(sizeof(Couple));
@@ -134,6 +134,25 @@ Value_list* iniValueList()
 
 	return list;
 }
+
+void addToCoupleList(Couple_list* cpl, Couple* cp){
+
+	if (cpl->couple == NULL || ( cpl->couple->x == -1 && cpl->couple->y == -1 ) ) {
+		cpl->couple = cp;
+		return;
+	}
+
+	Couple_list* cpl_1 = iniCoupleList();
+	cpl_1->couple = cp;
+
+	while (cpl->next != NULL){
+		cpl=cpl->next;
+	}
+
+	cpl->next = cpl_1;
+
+}
+
 
 
 int length(Value_list *list){

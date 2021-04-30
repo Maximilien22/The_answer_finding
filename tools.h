@@ -6,11 +6,11 @@
 typedef struct Couple Couple;
 struct Couple
 {	
-	float x;
-	float y;
+	double x;
+	double y;
 	      
 };
-Couple *iniCouple (float x, float y);
+Couple *iniCouple (double x, double y);
 
 //---------COUPLE LIST----------------
 typedef struct Couple_list Couple_list;
@@ -30,17 +30,9 @@ struct Value_list
 };
 
 Couple_list *iniCoupleList();
+void addToCoupleList(Couple_list* Cpl, Couple* cp);
+Couple* getFromCoupleList(Couple_list* Cpl, int idx);
 Value_list *iniValueList();
-
-//int length(Couple_list *list);
-
-/*float float_get(Float_list *list, int index);
-void float_set(Float_list *list, int index, float value);
-void float_append(Float_list *list, float nb);
-void float_pop(Float_list *list);
-void float_remove(Float_list *list, int index);
-void float_add(Float_list *list,float nb, int index);
-void float_printList(Float_list *list);*/
 
 //---------GRAPH----------------
 

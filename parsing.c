@@ -49,7 +49,7 @@ int isNumber( char c){
 	return c>='0' && c<='9';
 }
 
-void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currId, float* currLat, float* currLon, int* divider){
+void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currId, double* currLat, double* currLon, int* divider){
 	
 	if (node_flags[reading_lat]){
 		if (c == '.'){
@@ -61,13 +61,13 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 				(*currLat)*=10;
 				(*currLat)+=(c-'0');
 			}else{
-				(*currLat) += (float) (c-'0')/(*divider);
+				(*currLat) += (double) (c-'0')/(*divider);
 				(*divider) *=10;
 
 			}
 
 		}else if (c==' '){
-			printf("je viens de lire la lat : %f\n", *currLat);
+			
 			//TODO : l'ajouter a GraphInfo
 			node_flags[l_read] = 0;
 			node_flags[a_read] = 0;
@@ -76,7 +76,7 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 			node_flags[reading_lat] = 0;
 			node_flags[coma_read]= 0;
 			*divider =10;
-			*currLat =0.0;
+			
 		}
 	}
 	
@@ -89,13 +89,18 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 				(*currLon)*=10;
 				(*currLon)+=(c-'0');
 			}else{
-				(*currLon) += (float) (c-'0')/(*divider);
+				(*currLon) += (double) (c-'0')/(*divider);
 				(*divider)*=10;
 			}
 
 		}else if (c=='/' || c=='>'){
-			printf("je viens de lire la lon : %f\n", *currLon);
+			//printf("lat : %f\n", *currLat);
+			//printf("lon : %f\n", *currLon);
 			//TODO : l'ajouter a GraphInfo
+
+			Couple* cp = iniCouple(*currLat, *currLon);
+			addToCoupleList(gInfo->pos, cp);
+
 			node_flags[l_read] = 0;
 			node_flags[o_read] = 0;
 			node_flags[n_read] = 0;
@@ -104,6 +109,7 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 			node_flags[coma_read]= 0;
 			*divider =10;
 			*currLon = 0.0;
+			*currLat =0.0;
 
 			
 		}
@@ -208,8 +214,8 @@ GraphInfo * create_correspondance(){
 	FILE * fichier;
 	fichier = fopen(file_name, "r");
 	unsigned long currId = 0; 
-	float currLat = 0; 
-	float currLon = 0; 
+	double currLat = 0; 
+	double currLon = 0; 
 	int divider = 10;
 
 	char c = fgetc(fichier);
@@ -403,23 +409,35 @@ void freeGraphInfo(GraphInfo * gInfo){
 
 int main (){
 
+	// -------------- CONSTRUCTION DU GRAPH ----------------
 	GraphInfo * gInfo = create_correspondance();
 
 	Graph *g = create_graph(gInfo);
 
 	create_way(gInfo, g);
 
-	/*for (int i=0; i<NB_SOMMETS; i++){
-		printf("[%lu] ",gInfo->correspondance[i] );
-	}*/
-	printf("\n");
+	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
 	
-	printf("\n\nidx : %i\n",gInfo->idx);
+	printf("\n\nidx : %i\n",gInfo->idx); // la taille du graph
+	for (int i=0; i<gInfo->idx; i++){
+		printf("[%lu] ",gInfo->correspondance[i] ); 
 
+	}
+
+	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
+	Couple_list* cpl = gInfo->pos;
+	while (cpl != NULL){
+		printf("lat : %f, lon : %f\n",cpl->couple->x,cpl->couple->y);
+		cpl=cpl->next;
+	}
+
+
+	// -------------affiche le todot du graph ---------------------
 	char * td = todot(g);
-	//printf("%s\n",td);
-	free(td);
+	printf("%s\n",td);
 
+	// --------------free--------------
+	free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
 
@@ -429,11 +447,8 @@ int main (){
 // tableau de correspondance entre id des noeuds et index dans adjlists
 // parcourir toutes les ways et connectée les nodes 2 a 2
 
-//TODO : faire des allocations dynamique de memoire dans todot et correspondance list
-
-//TODO : ajouter les pos (aqjouter a graph info et etre plus precis)
+//TODO : avoir un petit tableau au debut et realloc quand on a plus de place ( dans todot ) et correspondance list
 
 //TODO : ajouter les names aux noeuds ( soit direct dans node, ou si dans way, ajouter au premier noeud),
 // pr ensuite pouvoir faire un parcours de place danton a restaurant l'inattendu par ex
-
 //TODO : verifier que les users n'ai pas de < ou de =
