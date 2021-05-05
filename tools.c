@@ -5,7 +5,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
+#include <math.h>
 #include "tools.h"
+
+
+#define pi 3.14159265358979323846
 
 Graph *iniGraph (int order)
 {
@@ -211,7 +215,20 @@ void freeGraph(Graph* G)
 	free(G);
 }
 
-/*int main(){ 
+
+double deg2rad(double deg)
+{
+  return (deg * pi / 180);
+}
+
+double rad2deg(double rad)
+{
+  return (rad * 180 / pi);
+}
+
+
+/*
+int main(){ 
 	Graph * g = iniGraph(3);
 	g->pos[0] = iniCouple(545454,84848);
 	g->pos[1] = iniCouple(54,0.55);

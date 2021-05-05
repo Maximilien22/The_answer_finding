@@ -51,6 +51,7 @@ void freeCoupleList(Couple_list *Cpl);
 void freeValueList(Value_list *Vlist);
 void freeGraph(Graph* G);
 char* todot(Graph *G);
-
+double deg2rad(double deg);
+double rad2deg(double rad);
 
 #endif

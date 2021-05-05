@@ -1,12 +1,14 @@
 #define _GNU_SOURCE
 
-#include "parsing.h"
-#include "tools.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
+#include <math.h>
+#include "parsing.h"
+#include "tools.h"
+#include "path.h"
 
 #define id_done 0
 #define lat_done 1
@@ -407,6 +409,7 @@ void freeGraphInfo(GraphInfo * gInfo){
 }
 
 
+
 int main (){
 
 	// -------------- CONSTRUCTION DU GRAPH ----------------
@@ -419,10 +422,10 @@ int main (){
 	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
 	
 	printf("\n\nidx : %i\n",gInfo->idx); // la taille du graph
-	for (int i=0; i<gInfo->idx; i++){
-		printf("[%lu] ",gInfo->correspondance[i] ); 
-
-	}
+	for (int i=0; i<gInfo->idx; i++)
+		printf("[%lu] ",gInfo->correspondance[i] );
+	
+	printf("\n"); 
 
 	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
 	Couple_list* cpl = gInfo->pos;
@@ -436,7 +439,28 @@ int main (){
 	char * td = todot(g);
 	printf("%s\n",td);
 
+
+	//-------trouver le plus court chemins----------
+	/*
+	double* dist = malloc(sizeof(int) * g->order);
+	int* pred = calloc(sizeof(int)* g->order,0);
+
+	Dijkstra(g,3,gInfo,dist,pred);
+
+	for (int i = 0; i < g->order; ++i)
+	{
+		printf("distance  = %f Km \n", dist[i]);
+	}
+	for (int i = 0; i < g->order; ++i)
+	{
+		printf("pred  = %d \n", pred[i]);
+	}
+
+	free(dist);
+	free(pred);
+	*/
 	// --------------free--------------
+
 	free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
