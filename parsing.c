@@ -8,8 +8,7 @@
 #include <math.h>
 #include "parsing.h"
 #include "tools.h"
-#include "Dijkstra.h"
-#include "list.h"
+#include "path.h"
 
 #define id_done 0
 #define lat_done 1
@@ -411,6 +410,7 @@ void freeGraphInfo(GraphInfo * gInfo){
 
 
 
+
 int main (){
 
 	// -------------- CONSTRUCTION DU GRAPH ----------------
@@ -442,29 +442,43 @@ int main (){
 
 
 	//-------trouver le plus court chemins----------
-	int start = 0;
-	struct List* bonjour = Dijkstra(g,gInfo,start);
-	printf("bonjour\n");
-	afficherListe(bonjour);
-
-	/*
+	
+	double lat;
+	double lon;
+	for (int i = 0; i < g->order; ++i)
+	{
+		get_data(gInfo, i , &lat, &lon);
+		printf("coord(%d) = [%f] and [%f]\n",i, lat,lon);
+	}
+	printf("g->order = %d\n", g->order);
+	
 	double* dist = calloc(g->order,sizeof(int));
 	int* pred = calloc( g->order,sizeof(int));
 
 	Dijkstra(g,3,gInfo,dist,pred);
+/*
+	int start = 3;
+	for (int i = 0; i < g->order; ++i)
+	{
+		//M[i] = i;
+		printf(" ouii  %d\n",start );
+		(pred + i) = start;
+		dist[i] = cost1(g, gInfo, start, i);
+	}
+	pred[1] = start;
 
 	for (int i = 0; i < g->order; ++i)
 	{
-		printf("distance  = %f Km \n", dist+i);
+		printf("distance  = %f Km \n", *(dist+i));
 	}
 	for (int i = 0; i < g->order; ++i)
 	{
-		printf("pred  = %d \n", pred+i);
+		printf("pred  = %d \n", *(pred+i));
 	}
-
+*/
 	free(dist);
 	free(pred);
-	*/
+	
 	// --------------free--------------
 
 	free(td);

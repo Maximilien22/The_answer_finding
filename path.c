@@ -7,6 +7,18 @@
 #include "tools.h"
 #include "parsing.h"
 
+//Get x = longitude and y = latitude of a edge.
+void get_data(GraphInfo* gInfo, int i ,double* x, double* y)
+{
+	Couple_list* cpl = gInfo->pos;
+	for (int j = 0; j < i; ++j){
+		printf("%d\n", i);
+		cpl = cpl->next;
+	}
+	*x = cpl->couple->x;
+	*y = cpl->couple->y; 
+}
+
 //Get doc on get_distance on :
 //https://www.geodatasource.com/developers/c
 double get_distance(double lat1, double lon1, double lat2, double lon2)
@@ -27,11 +39,12 @@ double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 	if (s1 == s2)
 		return 0;
 
-	Couple_list* cpl1 = gInfo->pos;
-	Couple_list* cpl2 = gInfo->pos;
-
 	Value_list* currElement = G->adjlists[s1];
 	int adj;
+	double lat1;
+	double lon1;
+	double lat2;
+	double lon2;
 	if (currElement != NULL)
 	{
 		while (currElement != NULL)
@@ -39,13 +52,10 @@ double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 			adj = currElement->value;
 			if (adj == s2)
 			{
-				for (int i = 0; i < s1; ++i)
-					cpl1 = cpl1->next;
-				for (int i = 0; i < adj; ++i)
-					cpl2 = cpl2->next;
 
-				return get_distance(cpl1->couple->x, cpl1->couple->y, 
-					cpl2->couple->x, cpl2->couple->y);
+				get_data(gInfo,s1,&lat1,&lon1);
+				get_data(gInfo,s2,&lat2,&lon2);
+				return get_distance(lat1,lon1,lat2,lon2);
 			}
 			currElement = currElement->next;
 		}
@@ -85,24 +95,23 @@ void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_
 	int* M = malloc(sizeof(int)*G->order);
 	for (int i = 0; i < G->order; ++i)
 	{
-		M[i] = i;
+		res_dist[i] = cost(G, gInfo, start, i);
 	}
 
 	for (int i = 0; i < G->order; ++i)
 	{
-		res_dist[i] = cost(G, gInfo, start, i);
-		printf("res_dist[%d] = %f\n",i, res_dist[i] );
+		*(res_dist + i) = cost(G, gInfo, start, i);
+		printf("res_dist[%d] = %f\n",i, res_dist[i]);
 	}
 	for (int i = 0; i < G->order; ++i)
 	{
 		res_pred[i] = start;
-		printf("res_pred[%d] = %d\n",i, res_pred[i] );
+		printf("res_pred[%d] = %d\n",i, res_pred[i]);
 	}
 
 	res_pred[start] = -1;
-
-	//================================================
 	M[start] = -1;
+	//================================================
 	int e;
 	Value_list* currElement;
 	int adj;
@@ -112,6 +121,7 @@ void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_
 	{
 		e = heuristic(G, M, res_dist);
 		printf("e = %d\n", e);
+
 		for (int i = 0; i < G->order; ++i)
 		{
 			printf("ditance2[%d] = %f\n", i,res_dist[i]);
