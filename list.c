@@ -22,7 +22,7 @@ List *initlist()
     return list;
 }
 
-void append(List *list, int nv)
+void append(struct List *list, int nv)
 {
     List *nouveau = malloc(sizeof(*nouveau));
     if (nouveau)
@@ -34,7 +34,7 @@ void append(List *list, int nv)
     return;
 }
 
-int pop(List *liste)
+int pop(struct List *liste)
 {
     if (liste == NULL)
     {
@@ -48,7 +48,7 @@ int pop(List *liste)
     return val;
 }
 
-void afficherListe(List *liste)
+void afficherListe(struct List *liste)
 {
     if (liste == NULL)
     {
@@ -65,7 +65,7 @@ void afficherListe(List *liste)
     return;
 }
 
-void delel(List *liste, int rech)
+void delel(struct List *liste, int rech)
 {
     List *t = liste;
     while(t->val != NULL)
@@ -79,20 +79,25 @@ void delel(List *liste, int rech)
     return;
 }
 
-int lvalue(List *liste, int rech)
+int lvalue(struct List *liste, int rech)
 {
+    if (rech == -1)
+    {
+        return -1;
+    }
+
     List *t = liste;
-    for (size_t i = 0; i < rech; i++)
+    for (int i = 0; i < rech; i++)
     {
         t = t->next;
     }
     return t->val;
 }
 
-void lchangeval(List *liste, int rech, int newval)
+void lchangeval(struct List *liste, int rech, int newval)
 {
     List *t = liste;
-    for (size_t i = 0; i < rech; i++)
+    for (int i = 0; i < rech; i++)
     {
         t = t->next;
     }

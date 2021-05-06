@@ -1,11 +1,12 @@
-#include "parsing.h"
-#include "tools.h"
-#include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 // #include <unistd.h>
 // #include <err.h>
+#include "parsing.h"
+#include "tools.h"
+#include "list.h"
 
 double get_distance(double lat1, double lon1, double lat2, double lon2)
 {
@@ -50,11 +51,32 @@ int cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 	return -1;
 }
 
+int min_of_list(struct List *M, struct List *dist)
+{
+    int res = -1;
+    struct List *t = M;
+    int i = 0;
+    while (t != NULL)
+    {
+        i = t->val;
+        if (res == -1 || lvalue(dist, i) < lvalue(dist, res) )
+        {
+            if (lvalue(dist, i) != -1)
+            {
+                res = i;
+            }
+
+        }
+        i += 1;
+        t = t->next;
+    }
+    return res;
+}
 
 
 struct List* Dijkstra(Graph* G,  GraphInfo* gInfo, int start)
 {
-    int order = G->order;
+    //int order = G->order;
     struct List *M = malloc(sizeof(List));
     struct List *dist = malloc(sizeof(List));
     struct List *pred = malloc(sizeof(List));

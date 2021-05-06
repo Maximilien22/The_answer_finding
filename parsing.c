@@ -8,7 +8,8 @@
 #include <math.h>
 #include "parsing.h"
 #include "tools.h"
-#include "path.h"
+#include "Dijkstra.h"
+#include "list.h"
 
 #define id_done 0
 #define lat_done 1
@@ -30,7 +31,7 @@
 
 #define NB_SOMMETS 1000000
 
-#define file_name "nearpita.osm"
+#define file_name "test.osm"
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
@@ -441,19 +442,24 @@ int main (){
 
 
 	//-------trouver le plus court chemins----------
+	int start = 0;
+	struct List* bonjour = Dijkstra(g,gInfo,start);
+	printf("bonjour\n");
+	afficherListe(bonjour);
+
 	/*
-	double* dist = malloc(sizeof(int) * g->order);
-	int* pred = calloc(sizeof(int)* g->order,0);
+	double* dist = calloc(g->order,sizeof(int));
+	int* pred = calloc( g->order,sizeof(int));
 
 	Dijkstra(g,3,gInfo,dist,pred);
 
 	for (int i = 0; i < g->order; ++i)
 	{
-		printf("distance  = %f Km \n", dist[i]);
+		printf("distance  = %f Km \n", dist+i);
 	}
 	for (int i = 0; i < g->order; ++i)
 	{
-		printf("pred  = %d \n", pred[i]);
+		printf("pred  = %d \n", pred+i);
 	}
 
 	free(dist);

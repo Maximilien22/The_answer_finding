@@ -32,23 +32,24 @@ double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 
 	Value_list* currElement = G->adjlists[s1];
 	int adj;
-
-	while (currElement != NULL)
+	if (currElement != NULL)
 	{
-		adj = currElement->value;
-		if (adj == s2)
+		while (currElement != NULL)
 		{
-			for (int i = 0; i < s1; ++i)
-				cpl1 = cpl1->next;
-			for (int i = 0; i < s2; ++i)
-				cpl2 = cpl2->next;
+			adj = currElement->value;
+			if (adj == s2)
+			{
+				for (int i = 0; i < s1; ++i)
+					cpl1 = cpl1->next;
+				for (int i = 0; i < adj; ++i)
+					cpl2 = cpl2->next;
 
-			return get_distance(cpl1->couple->x, cpl1->couple->y, 
-				cpl2->couple->x, cpl2->couple->y);
+				return get_distance(cpl1->couple->x, cpl1->couple->y, 
+					cpl2->couple->x, cpl2->couple->y);
+			}
+			currElement = currElement->next;
 		}
-		currElement = currElement->next;
 	}
-
 	return -1;
 }
 
@@ -69,10 +70,9 @@ int heuristic(Graph* G,int* M, double* dist)
 	{
 		if (M[i] != -1)
 		{
-			if (res == -1 || dist[i] < dist[res])
-			{
-				if (dist[i] != -1)
-					res = i;
+			if ((res == -1 || dist[i] < dist[res]) && dist[i] != -1)
+			{	
+				res = i;
 			}
 		}
 	}
@@ -81,49 +81,65 @@ int heuristic(Graph* G,int* M, double* dist)
 
 void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_pred)
 {
+	//=====================INIT=======================
 	int* M = malloc(sizeof(int)*G->order);
 	for (int i = 0; i < G->order; ++i)
 	{
 		M[i] = i;
-		res_dist[i] = cost(G, gInfo, start, i);
 	}
 
 	for (int i = 0; i < G->order; ++i)
 	{
-		res_pred[i] = start;
-		printf("dist init = %f\n", res_dist[i]);
+		res_dist[i] = cost(G, gInfo, start, i);
+		printf("res_dist[%d] = %f\n",i, res_dist[i] );
 	}
+	for (int i = 0; i < G->order; ++i)
+	{
+		res_pred[i] = start;
+		printf("res_pred[%d] = %d\n",i, res_pred[i] );
+	}
+
 	res_pred[start] = -1;
 
+	//================================================
 	M[start] = -1;
 	int e;
 	Value_list* currElement;
 	int adj;
 	double Cost;
+	//================================================
 	while (!is_empty(M, G->order))
 	{
 		e = heuristic(G, M, res_dist);
-
+		printf("e = %d\n", e);
+		for (int i = 0; i < G->order; ++i)
+		{
+			printf("ditance2[%d] = %f\n", i,res_dist[i]);
+		}
 		if (e == -1 || e == start) 
 			break;
 		
 		M[e] = -1;
 
 		currElement = G->adjlists[e];
-		while (currElement != NULL)
+		if (currElement != NULL)
 		{
-			printf("couple(%d, %d)\n", e,adj);
-			adj = currElement->value;
-			Cost = cost(G, gInfo, e, adj);
-
-			if (res_dist[adj] == -1 || res_dist[e] + Cost < res_dist[adj])
+			while (currElement != NULL)
 			{
-				res_dist[adj] = res_dist[e] + Cost;
-				res_pred[adj] = e;
-				printf("Ah ! couple(%d, %d))\n",e,adj);
+				adj = currElement->value;
+				Cost = cost(G, gInfo, e, adj);
+
+				if (res_dist[adj] == -1 || res_dist[e] + Cost < res_dist[adj])
+				{
+					res_dist[adj] = res_dist[e] + Cost;
+					res_pred[adj] = e;
+					printf("OUI PROBLEMES AVEC [%d] et [%d]\n",e,adj );
+				}
+				currElement = currElement->next;
 			}
-			currElement = currElement->next;
 		}
+		else
+			printf("BONJOUR pour [%d]\n",e );
 	}
 
 	free(M);

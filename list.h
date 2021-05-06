@@ -6,22 +6,22 @@
 typedef struct List List;
 struct List
 {
-    void val;
+    int val;
     List *next;
 };
 
 List *initlist();
 
-void append(List *list, int nv);
+void append(struct List *list, int nv);
 
-int pop(List *liste);
+int pop(struct List *liste);
 
-void afficherListe(Liste *liste);
+void afficherListe(struct Liste *liste);
 
-void delel(List *liste, int t);
+void delel(struct List *liste, int t);
 
-int lvalue(List *liste, int t);
+int lvalue(struct List *liste, int t);
 
-void lchangeval(List *liste, int rech, int newval);
+void lchangeval(struct List *liste, int rech, int newval);
 
 #endif
