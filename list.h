@@ -20,4 +20,8 @@ void afficherListe(Liste *liste);
 
 void delel(List *liste, int t);
 
+int lvalue(List *liste, int t);
+
+void lchangeval(List *liste, int rech, int newval);
+
 #endif

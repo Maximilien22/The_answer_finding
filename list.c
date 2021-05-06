@@ -65,15 +65,37 @@ void afficherListe(List *liste)
     return;
 }
 
-void delel(List *liste, int t)
+void delel(List *liste, int rech)
 {
-    while(liste->val != NULL)
+    List *t = liste;
+    while(t->val != NULL)
     {
-        if (liste->val == t)
+        if (t->val == rech)
         {
-            liste = liste->next;
+            t = t->next;
             return;
         }
     }
+    return;
+}
+
+int lvalue(List *liste, int rech)
+{
+    List *t = liste;
+    for (size_t i = 0; i < rech; i++)
+    {
+        t = t->next;
+    }
+    return t->val;
+}
+
+void lchangeval(List *liste, int rech, int newval)
+{
+    List *t = liste;
+    for (size_t i = 0; i < rech; i++)
+    {
+        t = t->next;
+    }
+    t->val = newval;
     return;
 }
