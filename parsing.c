@@ -9,6 +9,7 @@
 #include "parsing.h"
 #include "tools.h"
 #include "path.h"
+#include "vector.h"
 
 #define id_done 0
 #define lat_done 1
@@ -25,18 +26,16 @@
 #define reading_lat 11
 #define reading_lon 12
 #define coma_read 13
+#define chevront_open_read 14
 
-#define flags_nb 14
-
-#define NB_SOMMETS 1000000
+#define flags_nb 15
 
 #define file_name "nearpita.osm"
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
 	
-	gInfo->idx = 0;
-	gInfo->correspondance = calloc(NB_SOMMETS, sizeof(unsigned long));
+	gInfo->correspondance = vector_new();
 	gInfo->pos = iniCoupleList();
 
 	return gInfo;
@@ -129,8 +128,7 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 	else if (node_flags[reading_id] && c==' '){
 		node_flags[reading_id] = 0;
 		node_flags[id_done] = 1;
-		gInfo->correspondance[(gInfo->idx)] = *currId;
-		(gInfo->idx)+=1;
+		vector_add(gInfo->correspondance, *currId);
 		*currId = 0;
 	}
 
@@ -197,17 +195,24 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 
 void search_for_node(char c, int* node_flags ){
 
-	if (node_flags[n_read] && !node_flags[in_node]){
+	if (node_flags[chevront_open_read] && node_flags[n_read] && !node_flags[in_node]){
 		if (c=='o'){
 			node_flags[in_node]=1;
-			node_flags[n_read] = 0;
-		}else{
-			node_flags[n_read] = 0;
+			
 		}
-	}
 
-	if (c=='n' && !node_flags[in_node] ){
-		node_flags[n_read]=1;
+		node_flags[n_read] = 0;
+		node_flags[chevront_open_read] = 0;
+		
+	}else if (node_flags[chevront_open_read] && !node_flags[in_node] ){
+		if (c=='n'){
+			node_flags[n_read]=1;
+		}else{
+			node_flags[chevront_open_read] = 0;
+		}
+		
+	} else if (c=='<'){
+		node_flags[chevront_open_read] = 1;
 	}
 }
 
@@ -267,10 +272,10 @@ GraphInfo * create_correspondance(){
 	return gInfo;
 }
 
-int getCorrespondingId(int size, unsigned long * correspondance, unsigned long id){
+int getCorrespondingId(int size, vector * correspondance, unsigned long id){
 	int i=0; 
 	while (i<size){
-		if (correspondance[i] == id)
+		if (correspondance->data[i] == id)
 			return i;
 
 		i++;
@@ -392,7 +397,7 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 
 Graph* create_graph(GraphInfo* gInfo)
 {
-	Graph * G = iniGraph(gInfo->idx);
+	Graph * G = iniGraph(gInfo->correspondance->size);
 	return G;
 }
 
@@ -402,7 +407,7 @@ void freeGraphInfo(GraphInfo * gInfo){
 		free(&(gInfo->pos[i]));
 	}*/
 	//free(gInfo->pos);
-	free(gInfo->correspondance);
+	vector_free(gInfo->correspondance);
 	freeCoupleList(gInfo->pos);
 	free(gInfo);
 	
@@ -421,11 +426,8 @@ int main (){
 
 	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
 	
-	printf("\n\nidx : %i\n",gInfo->idx); // la taille du graph
-	for (int i=0; i<gInfo->idx; i++)
-		printf("[%lu] ",gInfo->correspondance[i] );
 	
-	printf("\n"); 
+	vector_print(gInfo->correspondance);
 
 	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
 	Couple_list* cpl = gInfo->pos;
@@ -471,7 +473,6 @@ int main (){
 // tableau de correspondance entre id des noeuds et index dans adjlists
 // parcourir toutes les ways et connectée les nodes 2 a 2
 
-//TODO : avoir un petit tableau au debut et realloc quand on a plus de place ( dans todot ) et correspondance list
 
 //TODO : ajouter les names aux noeuds ( soit direct dans node, ou si dans way, ajouter au premier noeud),
 // pr ensuite pouvoir faire un parcours de place danton a restaurant l'inattendu par ex

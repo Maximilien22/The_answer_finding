@@ -39,10 +39,11 @@ void __addOneEdge(Graph* G, int s_from, int s_to){
 		 // TODO ca ca marche pas je crois, pck ca verifie le pointeur pas que la valeur = 00000000
 		*cp = new_list;
 	}else{
-		while ( (*cp)->next!= NULL){
-			*cp = (*cp)->next;
+		Value_list* curr = *cp;
+		while ( curr->next!= NULL){
+			curr = curr->next;
 		}
-		(*cp)->next = new_list;
+		curr->next = new_list;
 	}
 
 }
