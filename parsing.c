@@ -30,7 +30,7 @@
 
 #define flags_nb 15
 
-#define file_name "test.osm"
+#define file_name "nearpita.osm"
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
@@ -411,82 +411,6 @@ void freeGraphInfo(GraphInfo * gInfo){
 	freeCoupleList(gInfo->pos);
 	free(gInfo);
 	
-}
-
-
-
-
-int main (){
-
-	// -------------- CONSTRUCTION DU GRAPH ----------------
-	GraphInfo * gInfo = create_correspondance();
-
-	Graph *g = create_graph(gInfo);
-
-	create_way(gInfo, g);
-
-	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
-	
-	
-	vector_print(gInfo->correspondance);
-
-	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
-	Couple_list* cpl = gInfo->pos;
-	while (cpl != NULL){
-		printf("lat : %f, lon : %f\n",cpl->couple->x,cpl->couple->y);
-		cpl=cpl->next;
-	}
-
-
-	// -------------affiche le todot du graph ---------------------
-	char * td = todot(g);
-	printf("%s\n",td);
-
-
-	//-------trouver le plus court chemins----------
-	
-	double lat;
-	double lon;
-	for (int i = 0; i < g->order; ++i)
-	{
-		get_data(gInfo, i , &lat, &lon);
-		printf("coord(%d) = [%f] and [%f]\n",i, lat,lon);
-	}
-	printf("g->order = %d\n", g->order);
-	
-	double* dist = calloc(g->order,sizeof(int));
-	int* pred = calloc( g->order,sizeof(int));
-
-	Dijkstra(g,3,gInfo,dist,pred);
-/*
-	int start = 3;
-	for (int i = 0; i < g->order; ++i)
-	{
-		//M[i] = i;
-		printf(" ouii  %d\n",start );
-		(pred + i) = start;
-		dist[i] = cost1(g, gInfo, start, i);
-	}
-	pred[1] = start;
-
-	for (int i = 0; i < g->order; ++i)
-	{
-		printf("distance  = %f Km \n", *(dist+i));
-	}
-	for (int i = 0; i < g->order; ++i)
-	{
-		printf("pred  = %d \n", *(pred+i));
-	}
-*/
-	free(dist);
-	free(pred);
-	
-	// --------------free--------------
-
-	free(td);
-	freeGraphInfo(gInfo);
-	freeGraph(g);
-
 }
 
 //-créé tt les nodes

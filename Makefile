@@ -1,18 +1,17 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-all:	parsing	
+all:	main
 
 
-parsing:	tools.o path.o parsing.o
+main:	tools.o path.o parsing.o vector.o
 parsing.o:	parsing.c parsing.h
 tools.o:	tools.c tools.h
 path.o:		path.c path.h
+vector.o: 	vector.c vector.h
 
 
 .PHONY: clean
 
 clean:
-	${RM} parsing parsing.o
-	${RM} tools.o
-	${RM} path.o 
+	${RM} main parsing.o path.o tools.o vector.o

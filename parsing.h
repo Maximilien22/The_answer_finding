@@ -13,7 +13,9 @@ struct GraphInfo
 };
 
 GraphInfo* iniGraphInfo();
-
-
+GraphInfo * create_correspondance();
+Graph* create_graph(GraphInfo* gInfo);
+GraphInfo * create_way(GraphInfo * gInfo, Graph* G);
+void freeGraphInfo(GraphInfo * gInfo);
 
 #endif
