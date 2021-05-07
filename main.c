@@ -8,6 +8,7 @@
 #include "path.h"
 #include "vector.h"
 #include "list.h"
+#include "graphics.h"
 
 
 int main (int argc, char** argv)
@@ -50,14 +51,14 @@ int main (int argc, char** argv)
 	Dijkstra(g,start,gInfo,dist,pred);
 
 	
-	for (int i = 0; i < g->order; ++i)
+	/*for (int i = 0; i < g->order; ++i)
 	{
 		printf("distance[i]  = %f Km \n", dist[i]);
 	}
 	for (int i = 0; i < g->order; ++i)
 	{
 		printf("pred[%d]  = %d \n",i, pred[i]);
-	}
+	}*/
 
 	struct List* way = initlist();
 
@@ -80,6 +81,9 @@ int main (int argc, char** argv)
 	//afficherListe(way);
 
 	printf("Distance entre le sommet %d et %d= %f\n",start,end,distance );
+
+
+	printGraph(gInfo);
 	free(dist);
 	free(pred);
 	
