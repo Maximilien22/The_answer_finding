@@ -47,7 +47,7 @@ int main (int argc, char** argv)
 	double* dist = calloc(g->order,sizeof(double));
 	int* pred = calloc( g->order,sizeof(int));
 
-	Dijkstra(g,3,gInfo,dist,pred);
+	Dijkstra(g,start,gInfo,dist,pred);
 
 	
 	for (int i = 0; i < g->order; ++i)

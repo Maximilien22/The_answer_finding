@@ -57,10 +57,15 @@ void afficherListe(struct List *liste)
     List *t = liste->next;
     while (t != NULL)
     {
-        printf("%d -> ", t->val);
+        printf("%d", t->val);
+        if (t->next != NULL)
+        {
+        	printf(" -> ");
+        }
         t = t->next;
+        
     }
-    printf("NULL\n");
+    printf("\n");
     return;
 }
 

@@ -61,7 +61,6 @@ double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 	return -1;
 }
 
-
 int is_empty(int* list, int len)
 {
 	for (int i = 0; i < len; ++i)
@@ -144,14 +143,13 @@ double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
 	}
 
 	int i = end;
-	
-	while (pred[i] != start)
-	{
+	while (i != start)
+	{	
 		append(way,i);
 		i = pred[i];
 	}
+	append(way, start);
 	afficherListe(way);
 
 	return dist[end];
 }
-
