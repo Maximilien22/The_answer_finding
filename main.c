@@ -34,10 +34,7 @@ int main (int argc, char** argv)
 
 	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
 	Couple_list* cpl = gInfo->pos;
-	while (cpl != NULL){
-		printf("lat : %f, lon : %f\n",cpl->couple->x,cpl->couple->y);
-		cpl=cpl->next;
-	}
+	
 
 
 	// -------------affiche le todot du graph ---------------------
@@ -63,6 +60,17 @@ int main (int argc, char** argv)
 	}
 
 	struct List* way = initlist();
+
+	int i=0;
+	while (cpl != NULL){
+		if (i==start || i == end){
+			printf("idx : %i, lat, lon : %f, %f\n",i, cpl->couple->x,cpl->couple->y);
+		}
+		cpl=cpl->next;
+		i++;
+	}
+
+
 	double distance = get_min_way(start,end,pred,dist,way);
 
 	//append(way,10);
@@ -70,6 +78,7 @@ int main (int argc, char** argv)
 	//append(way,4);
 	//append(way,8);
 	//afficherListe(way);
+
 	printf("Distance entre le sommet %d et %d= %f\n",start,end,distance );
 	free(dist);
 	free(pred);
