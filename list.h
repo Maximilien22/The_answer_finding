@@ -16,7 +16,7 @@ void append(struct List *list, int nv);
 
 int pop(struct List *liste);
 
-void afficherListe(struct Liste *liste);
+void afficherListe(struct List *liste);
 
 void delel(struct List *liste, int t);
 

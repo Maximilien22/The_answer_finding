@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <err.h>
 #include <math.h>
+#include "list.h"
 #include "tools.h"
 #include "parsing.h"
 
@@ -134,5 +135,18 @@ void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_
 	}
 
 	free(M);
+}
+
+double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
+{
+	int i = end;
+	while (pred[i] != start)
+	{
+		append(way,i);
+		i = pred[i];
+	}
+	afficherListe(way);
+
+	return dist[end];
 }
 

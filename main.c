@@ -7,9 +7,18 @@
 #include "tools.h"
 #include "path.h"
 #include "vector.h"
+#include "list.h"
 
 
-int main (){
+int main (int argc, char** argv)
+{
+	if (argc != 3)
+	{
+		err(1,"ERROR argument : need 2 arguments, int START and int END.");
+	}
+
+	int start = atoi(argv[1]);
+	int end = atoi(argv[2]);
 
 	// -------------- CONSTRUCTION DU GRAPH ----------------
 	GraphInfo * gInfo = create_correspondance();
@@ -53,8 +62,15 @@ int main (){
 		printf("pred[%d]  = %d \n",i, pred[i]);
 	}
 
-	
+	struct List* way = initlist();
+	double distance = get_min_way(start,end,pred,dist,way);
 
+	//append(way,10);
+	//append(way,7);
+	//append(way,4);
+	//append(way,8);
+	//afficherListe(way);
+	printf("Distance entre le sommet %d et %d= %f\n",start,end,distance );
 	free(dist);
 	free(pred);
 	
@@ -63,5 +79,6 @@ int main (){
 	free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
+
 
 }

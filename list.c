@@ -16,7 +16,6 @@ List *initlist()
     List *list = malloc(sizeof(*list));
     if (list)
     {
-        list->val = NULL;
         list->next = NULL;
     }
     return list;
@@ -29,33 +28,33 @@ void append(struct List *list, int nv)
     {
         nouveau->val = nv;
     }
-    nouveau->next = list;
-    list = nouveau;
+    nouveau->next = list->next;
+    list->next = nouveau;
     return;
 }
 
 int pop(struct List *liste)
 {
-    if (liste == NULL)
+    if (liste->next == NULL)
     {
-        exit(EXIT_FAILURE);
+        printf("liste vide; pop impossible" );
     }
 
-    int val = liste->val;
-    List *t = liste;
-    liste = liste->next;
+    int val = liste->next->val;
+    List *t = liste->next;
+    liste->next = t->next;
     free(t);
     return val;
 }
 
 void afficherListe(struct List *liste)
 {
-    if (liste == NULL)
+    if (liste->next == NULL)
     {
         printf("liste vide\n");
         return;
     }
-    List *t = liste;
+    List *t = liste->next;
     while (t != NULL)
     {
         printf("%d -> ", t->val);
@@ -67,8 +66,8 @@ void afficherListe(struct List *liste)
 
 void delel(struct List *liste, int rech)
 {
-    List *t = liste;
-    while(t->val != NULL)
+    List *t = liste->next;
+    while(t != NULL)
     {
         if (t->val == rech)
         {
@@ -86,7 +85,7 @@ int lvalue(struct List *liste, int rech)
         return -1;
     }
 
-    List *t = liste;
+    List *t = liste->next;
     for (int i = 0; i < rech; i++)
     {
         t = t->next;
@@ -96,7 +95,7 @@ int lvalue(struct List *liste, int rech)
 
 void lchangeval(struct List *liste, int rech, int newval)
 {
-    List *t = liste;
+    List *t = liste->next;
     for (int i = 0; i < rech; i++)
     {
         t = t->next;
