@@ -2,9 +2,10 @@
 #define H_GRAPHICS
 
 #include "parsing.h"
+#include "tools.h"
 
 
-void printGraph(GraphInfo * g);
+void printGraph(GraphInfo * gInfo, Graph* g);
 
 
 #endif

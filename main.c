@@ -18,6 +18,7 @@ int main (int argc, char** argv)
 		err(1,"ERROR argument : need 2 arguments, int START and int END.");
 	}
 
+
 	int start = atoi(argv[1]);
 	int end = atoi(argv[2]);
 
@@ -31,7 +32,7 @@ int main (int argc, char** argv)
 	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
 	
 	
-	vector_print(gInfo->correspondance);
+	//vector_print(gInfo->correspondance);
 
 	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
 	Couple_list* cpl = gInfo->pos;
@@ -39,8 +40,8 @@ int main (int argc, char** argv)
 
 
 	// -------------affiche le todot du graph ---------------------
-	char * td = todot(g);
-	printf("%s\n",td);
+	/*char * td = todot(g);
+	printf("%s\n",td);*/
 
 
 	//-------trouver le plus court chemins----------
@@ -83,13 +84,13 @@ int main (int argc, char** argv)
 	printf("Distance entre le sommet %d et %d= %f\n",start,end,distance );
 
 
-	printGraph(gInfo);
+	printGraph(gInfo, g);
 	free(dist);
 	free(pred);
 	
 	// --------------free--------------
 
-	free(td);
+	//free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
 

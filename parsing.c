@@ -29,7 +29,7 @@
 
 #define flags_nb 15
 
-#define file_name "nearpita.osm"
+#define file_name "map.osm"
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
