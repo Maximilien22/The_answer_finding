@@ -2,7 +2,6 @@
 #define H_TOOLS
 
 
-
 //---------COUPLE -----------------------
 typedef struct Couple Couple;
 struct Couple
@@ -54,5 +53,6 @@ void freeGraph(Graph* G);
 char* todot(Graph *G);
 double deg2rad(double deg);
 double rad2deg(double rad);
+Couple_list* getPos(Couple_list * pos, int x);
 
 #endif

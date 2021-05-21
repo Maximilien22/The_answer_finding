@@ -29,7 +29,7 @@
 
 #define flags_nb 15
 
-#define file_name "map.osm"
+char* file_name = NULL;
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
@@ -393,12 +393,19 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 }
 
 
-
-Graph* create_graph(GraphInfo* gInfo)
-{
+Graph* create_graph(GraphInfo* gInfo){
 	Graph * G = iniGraph(gInfo->correspondance->size);
 	return G;
 }
+
+void build_Graph_GraphInfo(GraphInfo ** gInfo, Graph **g, char** file_n){
+	file_name = *file_n;
+	
+	*gInfo = create_correspondance();
+	*g = create_graph(*gInfo);
+	create_way(*gInfo, *g);
+}
+
 
 void freeGraphInfo(GraphInfo * gInfo){
 
@@ -417,6 +424,4 @@ void freeGraphInfo(GraphInfo * gInfo){
 // parcourir toutes les ways et connectée les nodes 2 a 2
 
 
-//TODO : ajouter les names aux noeuds ( soit direct dans node, ou si dans way, ajouter au premier noeud),
-// pr ensuite pouvoir faire un parcours de place danton a restaurant l'inattendu par ex
 //TODO : verifier que les users n'ai pas de < ou de =

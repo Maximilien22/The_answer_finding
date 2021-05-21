@@ -12,10 +12,8 @@ struct GraphInfo
 	Couple_list * pos; // liste qui contient lat et lon, pr le i eme sommet
 };
 
-GraphInfo* iniGraphInfo();
-GraphInfo * create_correspondance();
-Graph* create_graph(GraphInfo* gInfo);
-GraphInfo * create_way(GraphInfo * gInfo, Graph* G);
+
+void build_Graph_GraphInfo(GraphInfo ** gInfo, Graph **g, char** file_name);
 void freeGraphInfo(GraphInfo * gInfo);
 
 #endif

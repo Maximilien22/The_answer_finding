@@ -10,6 +10,8 @@
 #include "list.h"
 #include "graphics.h"
 
+char* file = "nearpita.osm";
+
 
 int main (int argc, char** argv)
 {
@@ -18,31 +20,20 @@ int main (int argc, char** argv)
 		err(1,"ERROR argument : need 2 arguments, int START and int END.");
 	}
 
-
 	int start = atoi(argv[1]);
 	int end = atoi(argv[2]);
+	
+
 
 	// -------------- CONSTRUCTION DU GRAPH ----------------
-	GraphInfo * gInfo = create_correspondance();
-
-	Graph *g = create_graph(gInfo);
-
-	create_way(gInfo, g);
-
-	//---------- affiche la liste de correspondance entre ids des sommet du graphs et ids du .osm  ------------
+	GraphInfo * gInfo = NULL;
+	Graph *g = NULL;
 	
-	
-	//vector_print(gInfo->correspondance);
-
-	// -------------affiche les lat et lon enregistré dans gInfo->pos ---------------------
-	Couple_list* cpl = gInfo->pos;
-	
-
+	build_Graph_GraphInfo(&gInfo, &g, &file );
 
 	// -------------affiche le todot du graph ---------------------
 	/*char * td = todot(g);
 	printf("%s\n",td);*/
-
 
 	//-------trouver le plus court chemins----------
 	
@@ -51,17 +42,9 @@ int main (int argc, char** argv)
 
 	Dijkstra(g,start,gInfo,dist,pred);
 
-	
-	/*for (int i = 0; i < g->order; ++i)
-	{
-		printf("distance[i]  = %f Km \n", dist[i]);
-	}
-	for (int i = 0; i < g->order; ++i)
-	{
-		printf("pred[%d]  = %d \n",i, pred[i]);
-	}*/
 
 	struct List* way = initlist();
+	Couple_list* cpl = gInfo->pos;
 
 	int i=0;
 	while (cpl != NULL){
@@ -84,7 +67,10 @@ int main (int argc, char** argv)
 	printf("Distance entre le sommet %d et %d= %f\n",start,end,distance );
 
 
-	printGraph(gInfo, g);
+	printGraph(gInfo, g,way );
+	
+	
+	
 	free(dist);
 	free(pred);
 	
@@ -93,6 +79,8 @@ int main (int argc, char** argv)
 	//free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
+	
+	
 
 
 }

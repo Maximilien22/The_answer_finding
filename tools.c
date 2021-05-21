@@ -158,7 +158,17 @@ void addToCoupleList(Couple_list* cpl, Couple* cp){
 
 }
 
+Couple_list* getPos(Couple_list* cpl, int x){
 
+	Couple_list * pos = cpl;
+	
+    for (int i=0; i<x; i++){
+
+        pos = pos->next;
+    }
+	
+	return pos;
+}
 
 int length(Value_list *list){
 	if (list==NULL || list->value == 0)

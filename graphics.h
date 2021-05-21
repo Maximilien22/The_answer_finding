@@ -3,9 +3,10 @@
 
 #include "parsing.h"
 #include "tools.h"
+#include "list.h"
 
 
-void printGraph(GraphInfo * gInfo, Graph* g);
+void printGraph(GraphInfo * gInfo, Graph* g,struct List* way );
 
 
 #endif
