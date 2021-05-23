@@ -6,7 +6,7 @@
 #include "list.h"
 
 
-void printGraph(GraphInfo * gInfo, Graph* g,struct List* way );
+void printGraph(GraphInfo * gInfo, Graph* g );
 
 
 #endif
