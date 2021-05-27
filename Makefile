@@ -2,13 +2,15 @@ CC = gcc
 
 CPPFLAGS= `pkg-config --cflags sdl` -MMD
 CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
-LDFLAGS = -lm
 LDLIBS= `pkg-config --libs sdl`
+LIBS = -lm
 
 all:	main
 
 
-main:	tools.o path.o parsing.o vector.o list.o graphics.o
+
+main: main.c tools.o path.o parsing.o vector.o list.o graphics.o
+	gcc  $(CFLAGS) $(CPPFLAGS)  $^ $(LDLIBS) -o $@ $(LIBS)
 parsing.o:	parsing.c parsing.h
 tools.o:	tools.c tools.h
 path.o:		path.c path.h
