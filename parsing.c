@@ -29,7 +29,7 @@
 
 #define flags_nb 15
 
-char* file_name = NULL;
+char* file_name = "epita.osm";
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));

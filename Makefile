@@ -22,4 +22,4 @@ graphics.o:	graphics.c graphics.h
 .PHONY: clean
 
 clean:
-	${RM} main parsing.o path.o tools.o vector.o list.o
+	${RM} main parsing.o path.o tools.o vector.o list.o *.d

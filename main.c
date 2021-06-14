@@ -10,7 +10,7 @@
 #include "list.h"
 #include "graphics.h"
 
-char* file = "nearpita.osm";
+char* file = "map.osm";
 
 
 int main ()
