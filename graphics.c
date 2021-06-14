@@ -345,7 +345,7 @@ void check_event(){
 						path = NULL;
 						draw_graph();
 						break;
-					case SDLK_KP_ENTER:
+					case SDLK_RETURN:
 						path = getShortestPath(node1Path, node2Path);
 						draw_graph();
 						
