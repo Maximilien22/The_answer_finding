@@ -41,6 +41,8 @@ struct Graph
 {	
 	int order;
 	Value_list** adjlists;
+	unsigned char* lit;
+	unsigned char* notLit;
 	//Couple_list* pos;
 	// un name pr charque node
 	      
