@@ -1,9 +1,9 @@
 .u-section-1 {
-  background-image: url("images/rfr-min.jpg");
+  background-image: url("images/rfr-min1.jpg");
 }
 
 .u-section-1 .u-sheet-1 {
-  min-height: 800px;
+  min-height: 1228px;
 }
 
 .u-section-1 .u-layout-wrap-1 {
@@ -43,6 +43,10 @@
 }
 
 @media (max-width: 1199px) {
+  .u-section-1 {
+    background-position: 50% 50%;
+  }
+
   .u-section-1 .u-sheet-1 {
     min-height: 26px;
   }

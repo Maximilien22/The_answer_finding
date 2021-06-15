@@ -1,5 +1,5 @@
 .u-section-1 {
-  background-image: url("images/rfr-min.jpg");
+  background-image: url("images/rfr-min1.jpg");
 }
 
 .u-section-1 .u-sheet-1 {
@@ -40,7 +40,6 @@
 
 .u-section-1 .u-group-1 {
   min-height: 452px;
-  height: auto;
   margin-top: 181px;
   margin-bottom: 0;
 }
@@ -127,10 +126,6 @@
 
   .u-section-1 .u-layout-cell-2 {
     min-height: 330px;
-  }
-
-  .u-section-1 .u-group-1 {
-    height: auto;
   }
 
   .u-section-1 .u-layout-wrap-2 {
