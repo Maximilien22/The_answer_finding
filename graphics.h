@@ -6,7 +6,8 @@
 #include "list.h"
 
 
-void printGraph(GraphInfo * gInfo, Graph* g );
+void displayMap(GraphInfo * gInfo, Graph* g );
+
 
 
 #endif

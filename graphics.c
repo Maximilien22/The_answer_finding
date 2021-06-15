@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <err.h>
 #include <math.h>
@@ -10,18 +10,30 @@
 #include "vector.h"
 #include "list.h"
 
-SDL_Surface *screen = NULL;
-
 #define window_name "Why not Finding"
-Uint32 white = 0;
-Uint32 black = 0;
-Uint32 blue = 0;
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+
+Uint8 background [4] = {0,0,0, 0};
+Uint8 path_color [4] = {0,0,255, 255};
+Uint8 not_way_color [4] = {200,200,200, 255};
+Uint8 litColor [4] = {255,215,0, 150};
+Uint8 notlitColor [4] = {50,50,50, 255};
+
+DoubleInt* initialPositions = NULL;
+
+
+
+const double zoom_change = 1.5;
+const double move_change = 50;
+const double center_lat = 45.755015 ;
+const double center_lon = 4.859000;  
+
 double zoom = 100000;
-double zoom_change = 1.5;
-double move_change = 0.0002;
-double center_lat = 45.755015 ;
-double center_lon = 4.859000;  
 double node_size = 2;
+int shift_x = 0;
+int shift_y = 0;
+
 GraphInfo * gInfo = NULL; 
 Graph * g = NULL;
 Couple* positions = NULL;
@@ -31,11 +43,12 @@ int window_width  = 640;
 int node1Path = -1;
 int node2Path = -1;
 
+
 void draw_graph();
 void check_event();
 void getScreenCoordonate(double lon,double lat, double* x, double* y );
 void print_rectangle(int x, int y, Uint32 color, int sizeCoef);
-void draw_line(int pX1, int pY1, int pX2, int pY2, Uint32 color);
+void draw_line(int pX1, int pY1, int pX2, int pY2, Uint8 * color);
 void draw_path();
 void updateNodeSize();
 int getNodeAccordingToPos(int x, int y);
@@ -77,7 +90,6 @@ struct List* getShortestPath(int start, int end ){
 	return way;
 	
 }
-
 
 double toAbs (double x){
 	if (x<0){
@@ -123,7 +135,6 @@ int getNodeAccordingToPos(int x,int y){
 	return node;
 }
 
-
 void updateNodeSize(){
 	if (zoom >= 90000 && zoom < 510000 ){
 		node_size = (double) zoom / 50000; // therefore if zoom = 10000 it returs 2 ( the initial stuff)
@@ -131,79 +142,59 @@ void updateNodeSize(){
 	}
 }
 
-void draw_line(int pX1, int pY1, int pX2, int pY2, Uint32 color){
+void draw_line(int pX1, int pY1, int pX2, int pY2, Uint8 *color){
+		
+	SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], color[3]);
 	
-	SDL_Surface *rectangle1 = SDL_CreateRGBSurface(SDL_HWSURFACE, node_size/1.5, node_size/1.5, 32, 0, 0, 0, 0);
-    SDL_FillRect(rectangle1, NULL, color);
+	if (abs(pX1-pX2) <50){
+		SDL_RenderDrawLine(renderer, pX1+1 , pY1 , pX2+1 , pY2);
+		SDL_RenderDrawLine(renderer, pX1 , pY1 , pX2 , pY2);
+		SDL_RenderDrawLine(renderer, pX1-1 , pY1 , pX2-1 , pY2);
 		
-	SDL_Rect position;
-	
-	int lenX = pX2 - pX1;
-	int lenY = pY2 - pY1;
-	float vectorLen = sqrtf(lenX * lenX + lenY * lenY);
-	if(vectorLen == 0)
-		return;    
-	float inclineX = lenX / vectorLen;
-    float inclineY = lenY / vectorLen;    
-	float x = (int)pX1;    
-	float y = (int)pY1;    
-	/*int locked = SDL_MUSTLOCK(screen);   
-	if(locked)
-		SDL_LockSurface(screen);*/
-	
-	for(int i = 0; i < (int)vectorLen; i+=1){
-		
-		
-		position.x = (int) x;
-		position.y = (int) y;
-		SDL_BlitSurface(rectangle1, NULL, screen, &position);
-	
-        x += inclineX;        
-		y += inclineY;   
-		
-		}
-		
-		/*if(locked)
-			SDL_UnlockSurface(screen);*/
-		
-		
-	SDL_FreeSurface(rectangle1);
-		
+	}else{ 	
+		SDL_RenderDrawLine(renderer, pX1 , pY1+1 , pX2 , pY2+1);
+		SDL_RenderDrawLine(renderer, pX1 , pY1 , pX2 , pY2);
+		SDL_RenderDrawLine(renderer, pX1 , pY1-1 , pX2 , pY2-1);
+	}
 }
 
 void __draw_graph_prof(int x, int* M){
 	M[x] = (int) 1;
 	
-	Couple* cp = &positions[x];
 	
-	double x1 = 0;
-	double y1 = 0;
-	
-	getScreenCoordonate(cp->y, cp->x, &x1, &y1);
+	double x1 = initialPositions[x].x + shift_x ;
+	double y1 = initialPositions[x].y + shift_y;
 	
 	Value_list* adjlists = g->adjlists[x];
 	
-	if (adjlists!= NULL && adjlists->value>=0){
-		if (x == node1Path || x == node2Path){
-			print_rectangle(x1, y1, blue, 3);
-		}else{
-			print_rectangle(x1, y1, black, 1);
-		}
-		
+	/*SDL_SetRenderDrawColor(renderer, black[0], black[1], black[2], black[3]);
+	SDL_Rect rect = {x1,y1,node_size,node_size};
+	SDL_RenderDrawRect(renderer, &rect);
+	*/
+			
+	if (adjlists!= NULL && adjlists->value >= 0 && (x == node1Path || x == node2Path) ){
+			
+			SDL_SetRenderDrawColor(renderer, path_color[0], path_color[1], path_color[2], path_color[3]);
+			SDL_Rect rect = {x1,y1,node_size*4,node_size*4};
+			SDL_RenderDrawRect(renderer, &rect);
 	}
 	
 	while (adjlists != NULL){
-	
-		Couple* cp1 = &(positions[adjlists->value]);
-	
-		double x2 = 0;
-		double y2 = 0;
-	
-		getScreenCoordonate(cp1->y, cp1->x, &x2, &y2);
 			
-		draw_line(x1, y1, x2, y2, black);
-		
 		if (!M[adjlists->value]){
+			
+			double x2 = initialPositions[adjlists->value].x + shift_x ;
+			double y2 = initialPositions[adjlists->value].y + shift_y;
+		
+		
+		
+			if (g->lit[x] && g->lit[adjlists->value])
+				draw_line(x1, y1, x2, y2, litColor);
+			else if (g->notLit[x] || !g->notLit[adjlists->value])
+				draw_line(x1, y1, x2, y2, notlitColor);
+			else
+				draw_line(x1, y1, x2, y2, not_way_color);
+			
 			__draw_graph_prof(adjlists->value, M);
 		}
 		adjlists = adjlists->next;
@@ -237,9 +228,9 @@ void draw_path(){
 		getScreenCoordonate(cp2->y, cp2->x, &x2, &y2);
 	
 		//printf("y : %f, x : %f, x1 : %f, y1 : %f\n", (cp->y), (cp->x), x1, y1);
-		//print_rectangle(x1, y1,blue, 2);
+		//print_rectangle(x1, y1,path_color, 2);
 		
-		draw_line(x1,y1,x2,y2,blue);
+		draw_line(x1,y1,x2,y2,path_color);
 		
 		curr = curr->next;
 	}
@@ -248,8 +239,10 @@ void draw_path(){
 }
 
 void draw_graph(){
-	SDL_FillRect(screen, NULL, white);
-	//SDL_Flip(screen); // updates the screen 
+	SDL_SetRenderDrawColor(renderer, background[0], background[1], background[2], background[3]);
+	SDL_RenderClear(renderer);
+	
+	//SDL_Rect * rects = calloc(g->order, sizeof(SDL_Rect));
 	
 	int* M = calloc(g->order, sizeof(int));
 	
@@ -262,7 +255,12 @@ void draw_graph(){
 	}
 		
 	draw_path();
-	SDL_Flip(screen);
+	
+	//SDL_SetRenderDrawColor(renderer, black[0], black[1], black[2], black[3]);
+	//SDL_RenderDrawRects(renderer,rects, g->order);
+	SDL_RenderPresent(renderer);
+	free(M);
+	//free(rects);
 	
 }
 
@@ -276,7 +274,7 @@ void check_event(){
 		int x=0;
 		int y=0;
 		if (SDL_GetMouseState(&x, &y)){
-			//print_rectangle(x,y,blue,1);
+			//print_rectangle(x,y,path_color,1);
 			//SDL_Flip(screen);
 			
 			if (node1Path == -1){
@@ -285,7 +283,7 @@ void check_event(){
 				node2Path = getNodeAccordingToPos(x, y);
 			}
 			
-			draw_graph();
+			draw_graph(); //TODO dessiner que les deux points
 			
 		}
 		
@@ -296,9 +294,17 @@ void check_event(){
                 keep_going = 0;
 				break;
 			//case SDL_VIDEORESIZE:
-				//screen = SDL_SetVideoMode(0,0, 32, SDL_FULLSCREEN | SDL_HWSURFACE );
+				//screen = SDL_SetVideoMode(0,0, 32, SDL_FULLSCREEN | SDL_SWSURFACE );
 				//draw_graph();
 				//break;
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
+					
+							window_width = event.window.data1;
+							window_height = event.window.data2;
+							draw_graph();
+					}
+				break;
 						
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
@@ -320,22 +326,22 @@ void check_event(){
 						break;
 						
 					case SDLK_RIGHT:
-						center_lon += (move_change*200000/zoom);
+						shift_x -= move_change;
 						draw_graph();
 						break;
 						
 					case SDLK_LEFT:						
-						center_lon -= (move_change*200000/zoom);
+						shift_x += move_change;
 						draw_graph();
 						break;
 						
 					case SDLK_DOWN:
-						center_lat -= (move_change*200000/zoom);
+						shift_y -= move_change;
 						draw_graph();
 						break;
 						
 					case SDLK_UP:
-						center_lat += (move_change*200000/zoom);
+						shift_y += move_change;
 						draw_graph();
 						break;
 						
@@ -383,42 +389,58 @@ void getScreenCoordonate(double lon,double lat, double* x, double* y ){
 
 }
 
-void print_rectangle(int x, int y, Uint32 color, int size_coef){
-    	
-	SDL_Surface *rectangle = SDL_CreateRGBSurface(SDL_HWSURFACE, 
-	node_size*size_coef, node_size*size_coef, 32, 0, 0, 0, 0);
+void calculate_initialPos(){
 	
-    SDL_FillRect(rectangle, NULL, color);
-    SDL_Rect position;
-    position.x = x;
-    position.y = y;
-    SDL_BlitSurface(rectangle, NULL, screen, &position);
+	for (int node=0; node<g->order; node++){
+		
+		Couple* cp = &positions[node];
 	
-	SDL_FreeSurface(rectangle);
-    
+		double x1 = 0;
+		double y1 = 0;
+	
+		
+		getScreenCoordonate(cp->y, cp->x, &x1, &y1);
+	
+		initialPositions[node].x = x1;
+		initialPositions[node].y = y1;
+		
+	}
 }
 
-void printGraph(GraphInfo * g1, Graph* graph){
+void displayMap(GraphInfo * g1, Graph* graph){
 
 	gInfo = g1;
 	g = graph;
 	
+	
+	
     if (SDL_Init(SDL_INIT_VIDEO) == -1){
-		printf("error");
+		printf("Error while initialising sdl : %s",SDL_GetError());
+		return ;
 	}
 	
-	
-    screen = SDL_SetVideoMode(0, 0, 32, SDL_FULLSCREEN | SDL_HWSURFACE ); // we do that a first time to get screen width and height
-	window_height = screen->h;
-	window_width = screen->w;
-	
-	screen = SDL_SetVideoMode(window_width, window_height, 32, SDL_HWSURFACE );
-	
-	//printf("w : %i, h:%i\n",window_width,window_height);
-				
-	if (screen == NULL){
-		err(1,"cant create screen, try with a lower resolution");
+	window = SDL_CreateWindow(window_name,
+                              0,
+                              0,
+                              window_width,
+                              window_height,SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+							  
+	if(window == NULL)
+	{
+		printf("Error while creating window: %s",SDL_GetError());
+		return ;
 	}
+
+	//SDL_GetWindowSize(window, &window_width, &window_height);
+	
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	
+	if(renderer == NULL)
+	{
+		printf("error while creating renderer : %s",SDL_GetError());
+		return ;
+	}
+	
 	
 	positions = calloc(g->order, sizeof(Couple));
 	
@@ -429,19 +451,19 @@ void printGraph(GraphInfo * g1, Graph* graph){
         pos = pos->next;
     }
 	
-	//SDL_HWSURFACE: les données seront chargées dans la mémoire vidéo, c'est-à-dire dans la mémoire de votre carte 3D. Avantage : cette mémoire est plus rapide. Défaut : il y a en général moins d'espace dans cette mémoire que dans l'autre (SDL_SWSURFACE).
+	initialPositions = calloc((g->order), sizeof(DoubleInt));
 	
-	white = SDL_MapRGB(screen->format, 255, 255, 255);
-	black = SDL_MapRGB(screen->format, 0, 0, 0);
-	blue = SDL_MapRGB(screen->format, 0, 0, 255);
-	
-	SDL_WM_SetCaption(window_name, NULL);
-	
+	calculate_initialPos();
 	draw_graph();
 	
     check_event(); 
 
-	
+	free(initialPositions);
+	free(positions);
+	if (path!= NULL)
+		free_List(path);
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(renderer);
     SDL_Quit(); 
 	
 
