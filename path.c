@@ -153,3 +153,76 @@ double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
 
 	return dist[end];
 }
+
+
+
+void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred)
+{
+	struct List* h = initlist();
+	int oui;
+	double* heur = calloc(G->order, sizeof(double));
+	int* M = calloc(G->order,sizeof(int));
+	Value_list* currElement;
+	int adj;
+	int Cost;
+	for (int i = 0; i < G->order; ++i)
+	{
+		res_dist[i] = -1;
+		res_pred[i] = -1;
+		heur[i] = 0;
+		M[i] = 0;
+ 	}
+ 	res_dist[start] = 0;
+
+ 	update(h,start, 0);
+ 	int e;
+ 	while (h->next != NULL)
+ 	{
+ 		h_pop(h,&e,&oui);
+ 		if (e == end)
+ 		{
+ 			free(heur);
+ 			while (h != NULL)
+ 				pop(h);
+ 			free(M);
+ 			free(h);
+ 		}
+ 		printf("Processing : %d.\n", e);
+ 		M[e] = 1;
+
+		currElement = G->adjlists[e];
+		if (currElement != NULL)
+ 		{
+ 			while (currElement != NULL)
+ 			{
+ 				printf("ADJ = %d ",currElement->value);
+ 				adj = currElement->value;
+				Cost = cost(G, gInfo, e, adj);
+				if (M[e] && (res_dist[adj] == -1 || res_dist[e] + Cost < res_dist[adj]))
+				{
+					res_dist[adj] = res_dist[e] + Cost;
+					res_pred[adj] = e;
+					update(h, adj, res_dist[adj] + heur[adj]);
+				}
+
+				currElement = currElement->next;
+ 			}
+ 			printf("\n");
+ 		}
+ 	}
+
+ 	if (res_dist[end] == -1)
+ 		errx(1,"Destination not reachable.");
+
+ 	free(heur);
+ 	while (h->next != NULL)
+ 		pop(h);
+
+ 	free(h);
+ 	free(M);
+}
+
+
+
+
+
