@@ -1,14 +1,16 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
 #include <math.h>
+#include <regex.h>
+
 #include "parsing.h"
 #include "tools.h"
 #include "path.h"
 #include "vector.h"
+
 
 #define id_done 0
 #define lat_done 1
@@ -29,7 +31,40 @@
 
 #define flags_nb 15
 
-char* file_name = "epita.osm";
+char* file_name = NULL;
+
+
+int findString(char* str_request, char* str_regex  ){
+
+   int err;
+   regex_t preg;
+
+   err = regcomp (&preg, str_regex, REG_EXTENDED);
+   if (err == 0)
+   {
+      int match;
+      size_t nmatch = 0;
+      regmatch_t *pmatch = NULL;
+      
+      nmatch = preg.re_nsub;
+      pmatch = malloc (sizeof (*pmatch) * nmatch);
+      if (pmatch != NULL)
+      {
+         match = regexec (&preg, str_request, nmatch, pmatch, 0);
+         regfree (&preg);
+		 free(pmatch);
+         return !match;
+      }
+      else
+      {
+         fprintf (stderr, "memory error in regex\n");
+         exit (EXIT_FAILURE);
+      }
+   }
+
+	return -1;
+}
+
 
 GraphInfo * iniGraphInfo(){
 	GraphInfo * gInfo = calloc(1, sizeof(GraphInfo));
@@ -68,7 +103,6 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 
 		}else if (c==' '){
 			
-			//TODO : l'ajouter a GraphInfo
 			node_flags[l_read] = 0;
 			node_flags[a_read] = 0;
 			node_flags[t_read] = 0;
@@ -96,7 +130,6 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 		}else if (c=='/' || c=='>'){
 			//printf("lat : %f\n", *currLat);
 			//printf("lon : %f\n", *currLon);
-			//TODO : l'ajouter a GraphInfo
 
 			Couple* cp = iniCouple(*currLat, *currLon);
 			addToCoupleList(gInfo->pos, cp);
@@ -282,10 +315,15 @@ int getCorrespondingId(int size, vector * correspondance, unsigned long id){
 	return -1;
 }
 
-void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size){
+void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size, unsigned char isLit,unsigned char isNotLit ){
+	
 	
 	for(int i=0;i<size-1;i++){
-		addEdge(G, getCorrespondingId(G->order, gInfo->correspondance, tab[i]), getCorrespondingId(G->order, gInfo->correspondance, tab[i+1]) );
+		int id = getCorrespondingId(G->order, gInfo->correspondance, tab[i]);
+		G->lit[id] = G->lit[id] || isLit;
+		
+		G->notLit[id] = G->notLit[id] || isNotLit ;
+		addEdge(G, id, getCorrespondingId(G->order, gInfo->correspondance, tab[i+1]) );
 	}
 }
 
@@ -293,7 +331,7 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 
 	FILE * fichier;
 	fichier = fopen(file_name, "r");
-	int nodes_of_way_size = 1000;
+	//int nodes_of_way_size = 1000;//TODO faire des allocation dynamique
 
 	char c = fgetc(fichier);
 
@@ -311,8 +349,14 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 
 	// check if out of way
 	int y_read =0;
-	unsigned long * nodes_of_way = calloc(nodes_of_way_size, sizeof(unsigned long)); // tableau qui contient tout les noeuds d'une way
-	int idx_nodes_of_way = 0;
+	vector * nodes_of_way = vector_new(); // tableau qui contient tout les noeuds d'une way
+	
+	unsigned char isLit = 0;
+	unsigned char isNotLit = 0;
+	char* wayTxt = calloc(1,sizeof(char));
+	size_t wayTxtMaxSize = 1;
+	size_t wayTxtSize = 1;
+	
 
 	if (fichier != NULL){
 
@@ -332,6 +376,13 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 				}
 			}else{ // we are in a way,  trying to find the end of the way
 				
+				wayTxtSize+=1;
+				if (wayTxtSize>= wayTxtMaxSize)
+					wayTxt = realloc(wayTxt,++wayTxtMaxSize);
+				
+				
+				strncat(wayTxt, &c,1);
+				
 				if (! readingRef){ // we are trying to find a ref=
 					if (c=='f'){
 						f_read = 1;
@@ -350,8 +401,8 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 					}
 					else if (c=='/'){// end of ref
 						
-						nodes_of_way[idx_nodes_of_way] = currRef;
-						idx_nodes_of_way++;
+						vector_add(nodes_of_way,currRef);
+		//				idx_nodes_of_way++;
 
 						//printf("j'ajoute : %lu a mon tab\n",currRef );
 						currRef = 0;
@@ -364,11 +415,16 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 				}else if (y_read){
 					if (c=='>'){// end of way
 						inWay = 0;
-						creates_edges(gInfo, G,  nodes_of_way, idx_nodes_of_way);
-						free(nodes_of_way);
-						nodes_of_way = calloc(nodes_of_way_size, sizeof(unsigned long));
-						idx_nodes_of_way = 0;
-						// reinitialise our nodes of way, beacause end of way
+						isLit = findString(wayTxt,"k=\"lit\" v=\"yes\"");
+						isNotLit = findString(wayTxt,"k=\"building\"");
+						
+						//printf("\nisLit : %i\n",isLit);
+						creates_edges(gInfo, G,  nodes_of_way->data, nodes_of_way->size, isLit, isNotLit);
+						vector_reset(nodes_of_way);
+						
+						
+						memset(wayTxt,0	,wayTxtSize);
+						wayTxtSize = 0;						
 					
 					}
 					else{
@@ -388,7 +444,8 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 		err(1,"cant open file");
 	}
 
-	free(nodes_of_way);
+	vector_free(nodes_of_way);
+	free(wayTxt);
 	return gInfo;
 }
 
