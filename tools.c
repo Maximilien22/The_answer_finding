@@ -19,10 +19,13 @@ Graph *iniGraph (int order)
  
 	graph->order = order;
 	graph->adjlists = calloc(graph->order, sizeof(Value_list));
+	graph->lit = calloc(graph->order, sizeof(unsigned char));
+	graph->notLit = calloc(graph->order, sizeof(unsigned char));
 	
 	//graph->pos = ; // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
-	for(int i =0; i<order; i++)
+	for(int i =0; i<order; i++){
 		graph->adjlists[i] = NULL;
+	}
 	return graph;
 }
 
@@ -36,7 +39,6 @@ void __addOneEdge(Graph* G, int s_from, int s_to){
 	//new_list->next = NULL;
 
 	if (*cp == NULL){
-		 // TODO ca ca marche pas je crois, pck ca verifie le pointeur pas que la valeur = 00000000
 		*cp = new_list;
 	}else{
 		Value_list* curr = *cp;
@@ -60,7 +62,7 @@ void addEdge(Graph* G,int s1,int s2)
 }
 
 
-char* todot(Graph *G){
+/*char* todot(Graph *G){
 	
     char* link = " -- ";
     char * dot = calloc (1000000,sizeof(char));
@@ -106,7 +108,7 @@ char* todot(Graph *G){
 
     return dot;
 
-}
+}*/
 
 
 Couple *iniCouple (double x, double y)
@@ -219,6 +221,8 @@ void freeGraph(Graph* G)
 			freeValueList(G->adjlists[i]);
 	}
 	free(G->adjlists);
+	free(G->lit);
+	free(G->notLit);
 	//for (int i=0; i<G->order; i++){
 		//free(G->pos[i]);
 	//}

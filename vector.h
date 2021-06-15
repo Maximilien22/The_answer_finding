@@ -11,6 +11,8 @@ struct vector
     unsigned long *data;// the array
 };
 
+void vector_reset(vector *v);
+
 vector *vector_new();
 
 void vector_free(vector *v);

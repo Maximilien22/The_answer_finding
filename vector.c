@@ -2,6 +2,7 @@
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 vector *vector_new()
 {
@@ -14,7 +15,7 @@ vector *vector_new()
 
     vect-> max_size = 100;
     vect-> size = 0;
-    vect-> data = calloc(100, sizeof(unsigned long));
+    vect-> data = calloc(vect->max_size, sizeof(unsigned long));
 
     return vect;
 }
@@ -27,14 +28,19 @@ void vector_free(vector *v)
 
 void double_max_size(vector *v)
 {
-	v->max_size *=2;
+	v->max_size = (v->max_size*1.2) + 5;
     v->data = realloc(v->data, sizeof(unsigned long) * (v->max_size));
 
 }
 
+void vector_reset(vector *v){
+	memset(v->data,0,v->max_size);
+	v->size = 0;
+}
+
 void vector_add(vector *v, unsigned long x)
 {
-    if (v->max_size == v->size)
+    if (v->max_size <= v->size)
     	double_max_size(v);
 
     v->data[v->size] = x;

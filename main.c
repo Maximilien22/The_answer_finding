@@ -13,8 +13,10 @@
 char* file = "map.osm";
 
 
+
 int main ()
 {
+	
 	/*if (argc != 3)
 	{
 		err(1,"ERROR argument : need 2 arguments, int START and int END.");
@@ -22,7 +24,7 @@ int main ()
 
 	int start = atoi(argv[1]);
 	int end = atoi(argv[2]);*/
-
+	
 
 
 	// -------------- CONSTRUCTION DU GRAPH ----------------
@@ -31,27 +33,6 @@ int main ()
 	
 	build_Graph_GraphInfo(&gInfo, &g, &file );
 
-
-
-	/*
-    int* pred = calloc(g->order, sizeof(int));
-    double* dist = calloc(g->order,sizeof(double));
-    int start = 5;
-    int end = 627;
-
-    A_start(g, gInfo, start, end, dist, pred);
-    printf("Distance = %f\n", dist[end]);
-    while (end != start)
-    {
-        printf("%d -> ", end);
-        end = pred[end];
-
-    }
-
-    printf("\n");
-    */
-
-
 	// -------------affiche le todot du graph ---------------------
 	/*char * td = todot(g);
 	printf("%s\n",td);*/
@@ -59,7 +40,7 @@ int main ()
 	
 
 
-	printGraph(gInfo, g );
+	displayMap(gInfo, g );
 	
 	
 	
@@ -69,9 +50,6 @@ int main ()
 	// --------------free--------------
 
 	//free(td);
-	
-	
-	
 	freeGraphInfo(gInfo);
 	freeGraph(g);
 	

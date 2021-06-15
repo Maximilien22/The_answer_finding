@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <unistd.h>
+#include <err.h>
 
 
 typedef struct List List;
 struct List
 {
     int val;
-    int cost;
     List *next;
 };
 
@@ -34,59 +33,13 @@ void append(struct List *list, int nv)
     return;
 }
 
-void update(struct List* list, int val, int cost)
-{
-
-	struct List* new = malloc(sizeof(*new));
-	if (new)
-	{
-		new->cost = cost;
-		new->val = val;
-	}
-
-	if (list->next == NULL)
-	{
-		list->next = new;
-	}
-	else
-	{
-		while (list->next != NULL)
-		{
-			if (list->next->cost >= cost)
-			{
-				new->next = list€2->next;
-				list->next = new;
-				return;
-			}
-
-		list = list->next;
-		}
-		new->next = NULL;
-		list->next = new;
-	}
-}
-
-void h_pop(struct List* list, int* val, int* cost)
-{
-	if (list->next == NULL)
-    {
-        printf("liste vide; pop impossible" );
-        return;
-    }
-    *cost = list->next->cost;
-    *val = list->next->val;
-    struct List* t = list->next;
-    list->next = list->next->next;
-    free(t);
-}
-
 int pop(struct List *liste)
 {
     if (liste->next == NULL)
     {
         printf("liste vide; pop impossible" );
-
     }
+
     int val = liste->next->val;
     List *t = liste->next;
     liste->next = t->next;
@@ -154,4 +107,15 @@ void lchangeval(struct List *liste, int rech, int newval)
     }
     t->val = newval;
     return;
+}
+
+void free_List(struct List *list)
+{
+	if(list == NULL)
+		err(1,"Error while trying to free list");
+
+	if (list->next != NULL){
+		free_List(list->next);
+	}
+	free(list);
 }

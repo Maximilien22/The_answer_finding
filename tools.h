@@ -47,12 +47,21 @@ struct Graph
 	// un name pr charque node
 	      
 };
+
+
+typedef struct DoubleInt DoubleInt;
+struct DoubleInt
+{	
+	int x;
+	int y;	      
+};
+
 Graph *iniGraph(int order);
 void addEdge(Graph* G,int s1,int s2);
 void freeCoupleList(Couple_list *Cpl);
 void freeValueList(Value_list *Vlist);
 void freeGraph(Graph* G);
-char* todot(Graph *G);
+//char* todot(Graph *G);
 double deg2rad(double deg);
 double rad2deg(double rad);
 Couple_list* getPos(Couple_list * pos, int x);
