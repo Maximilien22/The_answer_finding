@@ -10,20 +10,20 @@
 #include "list.h"
 #include "graphics.h"
 
-char* file = "map.osm";
+char* file = "nearpita.osm";
 
 
 
-int main ()
+int main (int argc, char** argv)
 {
 	
-	/*if (argc != 3)
+	if (argc != 3)
 	{
 		err(1,"ERROR argument : need 2 arguments, int START and int END.");
 	}
 
 	int start = atoi(argv[1]);
-	int end = atoi(argv[2]);*/
+	int end = atoi(argv[2]);
 	
 
 
@@ -34,33 +34,30 @@ int main ()
 	build_Graph_GraphInfo(&gInfo, &g, &file );
 
 
-	/*
+	
     int* pred = calloc(g->order, sizeof(int));
     double* dist = calloc(g->order,sizeof(double));
-    int start = 5;
-    int end = 627;
 
+    struct List* list = initlist();
     A_start(g, gInfo, start, end, dist, pred);
-    printf("Distance = %f\n", dist[end]);
-    while (end != start)
-    {
-        printf("%d -> ", end);
-        end = pred[end];
+    //Dijkstra(g, start, gInfo, dist, pred);
 
-    }
+    double diiiist = get_min_way(start,end,pred,dist,list);
 
-    printf("\n");
-    */
+    afficherListe(list);
+    printf("Distance = %f\n", diiiist);
+   	
+
 
    
 	// -------------affiche le todot du graph ---------------------
-	/*char * td = todot(g);
-	printf("%s\n",td);*/
+	//char * td = todot(g);
+	//printf("%s\n",td);
 
 	
 
 
-	displayMap(gInfo, g );
+	//displayMap(gInfo, g );
 	
 	
 	

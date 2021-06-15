@@ -163,7 +163,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 	int* M = calloc(G->order,sizeof(int));
 	Value_list* currElement;
 	int adj;
-	int Cost;
+	double new_cost;
 	for (int i = 0; i < G->order; ++i)
 	{
 		res_dist[i] = -1;
@@ -177,14 +177,19 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  	int e;
  	while (h->next != NULL)
  	{
+ 		printf("AHHHH\n");
  		h_pop(h,&e,&oui);
+ 		printf("Processing : %d.\n", e);
+ 		if (e == -1)
+ 			errx(1,"Destination not reachable.\n");
+
  		if (e == end)
  		{
  			free(heur);
- 			while (h != NULL)
- 				pop(h);
+
  			free(M);
- 			free(h);
+
+ 			return;
  		}
  		printf("Processing : %d.\n", e);
  		M[e] = 1;
@@ -196,10 +201,11 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  			{
  				printf("ADJ = %d ",currElement->value);
  				adj = currElement->value;
-				Cost = cost(G, gInfo, e, adj);
-				if (M[e] && (res_dist[adj] == -1 || res_dist[e] + Cost < res_dist[adj]))
+				new_cost = cost(G, gInfo, e, adj) + res_dist[e];
+				printf("distance %f\n", new_cost);
+				if (M[e] && (res_dist[adj] == -1 || new_cost < res_dist[adj]))
 				{
-					res_dist[adj] = res_dist[e] + Cost;
+					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
 					update(h, adj, res_dist[adj] + heur[adj]);
 				}
@@ -215,7 +221,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 
  	free(heur);
  	while (h->next != NULL)
- 		pop(h);
+ 		h_pop(h,&e,&oui);
 
  	free(h);
  	free(M);

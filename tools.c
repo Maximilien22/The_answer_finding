@@ -62,7 +62,7 @@ void addEdge(Graph* G,int s1,int s2)
 }
 
 
-/*char* todot(Graph *G){
+char* todot(Graph *G){
 	
     char* link = " -- ";
     char * dot = calloc (1000000,sizeof(char));
@@ -108,7 +108,7 @@ void addEdge(Graph* G,int s1,int s2)
 
     return dot;
 
-}*/
+}
 
 
 Couple *iniCouple (double x, double y)
