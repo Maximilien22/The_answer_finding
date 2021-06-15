@@ -8,6 +8,7 @@ typedef struct List List;
 struct List
 {
     int val;
+    int cost;
     List *next;
 };
 
@@ -32,6 +33,53 @@ void append(struct List *list, int nv)
     list->next = nouveau;
     return;
 }
+
+void update(struct List* list, int val, int cost)
+{
+
+	struct List* new = malloc(sizeof(*new));
+	if (new)
+	{
+		new->cost = cost;
+		new->val = val;
+	}
+
+	if (list->next == NULL)
+	{
+		list->next = new;
+	}
+	else
+	{
+		while (list->next != NULL)
+		{
+			if (list->next->cost >= cost)
+			{
+				new->next = list€2->next;
+				list->next = new;
+				return;
+			}
+
+		list = list->next;
+		}
+		new->next = NULL;
+		list->next = new;
+	}
+}
+
+void h_pop(struct List* list, int* val, int* cost)
+{
+	if (list->next == NULL)
+    {
+        printf("liste vide; pop impossible" );
+        return;
+    }
+    *cost = list->next->cost;
+    *val = list->next->val;
+    struct List* t = list->next;
+    list->next = list->next->next;
+    free(t);
+}
+
 
 int pop(struct List *liste)
 {

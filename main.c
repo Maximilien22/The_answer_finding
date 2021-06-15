@@ -33,6 +33,26 @@ int main ()
 	
 	build_Graph_GraphInfo(&gInfo, &g, &file );
 
+
+	/*
+    int* pred = calloc(g->order, sizeof(int));
+    double* dist = calloc(g->order,sizeof(double));
+    int start = 5;
+    int end = 627;
+
+    A_start(g, gInfo, start, end, dist, pred);
+    printf("Distance = %f\n", dist[end]);
+    while (end != start)
+    {
+        printf("%d -> ", end);
+        end = pred[end];
+
+    }
+
+    printf("\n");
+    */
+
+   
 	// -------------affiche le todot du graph ---------------------
 	/*char * td = todot(g);
 	printf("%s\n",td);*/
