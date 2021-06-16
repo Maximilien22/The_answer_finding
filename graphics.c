@@ -66,6 +66,8 @@ struct List* getShortestPath(int start, int end ){
 
 	
 	Dijkstra(g,start,gInfo,dist,pred);
+	//A_star(g,gInfo, start, end, dist, pred, 1);
+
 
 
 	struct List* way = initlist();
@@ -455,9 +457,4 @@ void displayMap(GraphInfo * g1, Graph* graph){
     SDL_Quit(); 
 	
 
-// TODO : draw line faster
-// TODO : plus rapide quand on zoom
-
-// TODO : memory leaks
-// TODO : getShorttestPath elsewhere
 }

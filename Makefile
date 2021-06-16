@@ -2,7 +2,7 @@ CC = gcc
 
 CPPFLAGS= `pkg-config --cflags sdl` -MMD
 CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
-LDLIBS= `pkg-config --libs sdl` -lSDL2 -lSDL2_image
+LDLIBS= `pkg-config --libs sdl2`
 LIBS = -lm
 
 all:	main
@@ -15,12 +15,12 @@ parsing.o:	parsing.c parsing.h
 tools.o:	tools.c tools.h
 path.o:		path.c path.h
 vector.o: 	vector.c vector.h
+heap.o:		heap.c heap.h
 list.o: 	list.c list.h
 graphics.o:	graphics.c graphics.h
-heap.o:		heap.c heap.h
 
 
 .PHONY: clean
 
 clean:
-	${RM} main *.d *.o
+	${RM} main *.o *.d
