@@ -34,12 +34,12 @@
 char* file_name = NULL;
 
 
-int findString(char* str_request, char* str_regex  ){
+int isString(char* str_request, char* str_regex  ){
 
    int err;
    regex_t preg;
 
-   err = regcomp (&preg, str_regex, REG_EXTENDED);
+   err = regcomp (&preg, str_regex, REG_NOSUB);
    if (err == 0)
    {
       int match;
@@ -63,6 +63,63 @@ int findString(char* str_request, char* str_regex  ){
    }
 
 	return -1;
+}
+
+char* findString(char* str_request, char* str_regex ){
+
+   int err;
+   regex_t preg;
+   
+   err = regcomp (&preg, str_regex, REG_EXTENDED);
+   if (err == 0)
+   {
+      int match;
+      size_t nmatch = preg.re_nsub;
+	  
+      regmatch_t *pmatch  = calloc (nmatch,sizeof (regmatch_t));
+      if (pmatch)
+      {
+/* (2) */
+
+         match = regexec (&preg, str_request, nmatch, pmatch, 0);
+/* (3) */
+         regfree (&preg);
+/* (4) */
+         if (match == 0 && nmatch>0)
+         {
+            int start = pmatch[0].rm_so;
+            int end = pmatch[0].rm_eo;
+            size_t size = end - start;
+               
+            char * result = calloc((size + 1),sizeof (char));
+            if (result)
+            {
+               strncpy (result, &str_request[start], size);
+               result[size] = '\0';
+			   
+			   free(pmatch);
+			   return result;
+			   
+            }
+         }
+/* (5) */
+         else 
+         { 		free(pmatch);
+				return NULL;
+		}
+/* (6) */
+      }
+      else
+      {
+         fprintf (stderr, "error in calloc\n");
+         exit (EXIT_FAILURE);
+      }
+	  
+	  free(pmatch);
+   }
+   
+   return NULL;
+  
 }
 
 
@@ -315,17 +372,27 @@ int getCorrespondingId(int size, vector * correspondance, unsigned long id){
 	return -1;
 }
 
-void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size, unsigned char isLit,unsigned char isNotLit ){
+void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size, unsigned char isLit,unsigned char isNotLit, char* wayName, unsigned long wayNamei){
 	
 	
 	for(int i=0;i<size-1;i++){
 		int id = getCorrespondingId(G->order, gInfo->correspondance, tab[i]);
 		G->lit[id] = G->lit[id] || isLit;
 		
-		G->notLit[id] = G->notLit[id] || isNotLit ;
+		
+		if (G->nodeNames[id] == NULL)// On change seulement si il n'a pas été initialisé
+		{
+			G->nodeNames[id] = wayName;
+			G->nodeNameID[id] = wayNamei;
+		}
+
+		
+		G->notLit[id] = isNotLit ;
 		addEdge(G, id, getCorrespondingId(G->order, gInfo->correspondance, tab[i+1]) );
 	}
 }
+
+
 
 GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 
@@ -357,6 +424,7 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 	size_t wayTxtMaxSize = 1;
 	size_t wayTxtSize = 1;
 	
+	unsigned long wayNamei = 0;
 
 	if (fichier != NULL){
 
@@ -415,13 +483,15 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 				}else if (y_read){
 					if (c=='>'){// end of way
 						inWay = 0;
-						isLit = findString(wayTxt,"k=\"lit\" v=\"yes\"");
-						isNotLit = findString(wayTxt,"k=\"building\"");
+						isLit = isString(wayTxt,"k=\"lit\" v=\"yes\"");
+						isNotLit = isString(wayTxt,"k=\"lit\" v=\"no\"");
+						char* wayName = findString(wayTxt, "(k=\"name\" v=\"[[:print:]]+\")");
+						
 						
 						//printf("\nisLit : %i\n",isLit);
-						creates_edges(gInfo, G,  nodes_of_way->data, nodes_of_way->size, isLit, isNotLit);
+						creates_edges(gInfo, G,  nodes_of_way->data, nodes_of_way->size, isLit, isNotLit, wayName, wayNamei);
+						wayNamei++;
 						vector_reset(nodes_of_way);
-						
 						
 						memset(wayTxt,0	,wayTxtSize);
 						wayTxtSize = 0;						
