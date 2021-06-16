@@ -65,8 +65,8 @@ struct List* getShortestPath(int start, int end ){
 	int* pred = calloc( g->order,sizeof(int));
 
 	
-	Dijkstra(g,start,gInfo,dist,pred);
-	//A_star(g,gInfo, start, end, dist, pred, 1);
+	//Dijkstra(g,start,gInfo,dist,pred);
+	A_star(g,gInfo, start, end, dist, pred, 1);
 
 
 
