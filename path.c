@@ -10,14 +10,10 @@
 #include "heap.h"
 
 //Get x = longitude and y = latitude of a edge.
-void get_data(GraphInfo* gInfo, int i ,double* x, double* y)
+void get_data(Couple** positions, int i ,double* x, double* y)
 {
-	Couple_list* cpl = gInfo->pos;
-	for (int j = 0; j < i; ++j){
-		cpl = cpl->next;
-	}
-	*x = cpl->couple->x;
-	*y = cpl->couple->y; 
+	*x = (*positions)[i].x;
+	*y = (*positions)[i].y; 
 }
 
 //Get doc on get_distance on :
@@ -35,7 +31,7 @@ double get_distance(double lat1, double lon1, double lat2, double lon2)
     return dist * 1.609344;
 }
 
-double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
+double cost(Graph* G, Couple** positions, int s1, int s2)
 {
 	if (s1 == s2)
 		return 0;
@@ -53,8 +49,8 @@ double cost(Graph* G, GraphInfo* gInfo, int s1, int s2)
 		if (adj == s2)
 		{
 
-			get_data(gInfo,s1,&lat1,&lon1);
-			get_data(gInfo,s2,&lat2,&lon2);
+			get_data(positions,s1,&lat1,&lon1);
+			get_data(positions,s2,&lat2,&lon2);
 			return get_distance(lat1,lon1,lat2,lon2);
 		}
 		currElement = currElement->next;
@@ -89,7 +85,7 @@ int get_next(Graph* G,int* M, double* dist)
 	return res;
 }
 
-void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_pred)
+void Dijkstra(Graph* G, int start, Couple** positions, double* res_dist, int* res_pred)
 {
 	//=====================INIT=======================
 	int* M = calloc(G->order,sizeof(int));
@@ -123,7 +119,7 @@ void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_
 			while (currElement != NULL)
 			{
 				adj = currElement->value;
-				Cost = cost(G, gInfo, e, adj);
+				Cost = cost(G, positions, e, adj);
 				if (res_dist[adj] == -1 || res_dist[e] + Cost < res_dist[adj])
 				{
 					res_dist[adj] = res_dist[e] + Cost;
@@ -156,14 +152,14 @@ double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
 }
 
 
-double get_angle(GraphInfo* gInfo, int start, int s)
+double get_angle(Couple** positions, int start, int s)
 {
 	double lat1;
 	double long1;
-	get_data(gInfo,s,&lat1,&long1);
+	get_data(positions,s,&lat1,&long1);
 	double u_x = lat1;
 	double u_y = long1;
-	get_data(gInfo,start,&lat1,&long1);
+	get_data(positions,start,&lat1,&long1);
 	u_x -= lat1;
 	u_y -= long1;
 	double res = atan2(u_x,u_y);
@@ -172,18 +168,18 @@ double get_angle(GraphInfo* gInfo, int start, int s)
 	return res;
 }
 
-void A_star_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double angle_end, int start)
+void A_star_Heuristique(Graph* G, Couple** positions, double* Heuristic, double angle_end, int start)
 {
 	double lat1;
 	double long1;
 	double lat2;
 	double long2;
 	double angle;
-	get_data(gInfo, start, &lat1, &long1);
+	get_data(positions, start, &lat1, &long1);
 
 	for (int i = 0; i < G->order; ++i)
 	{
-		get_data(gInfo, i, &lat2, &long2);
+		get_data(positions, i, &lat2, &long2);
 
 		if ((lat2 - lat2) * (long2 - long1) < 0)
 		angle = (angle_end - (atan2(long2-long1,lat2-lat1) + 180)) * 0.31830988618;
@@ -196,7 +192,7 @@ void A_star_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double an
 	}
 }
 
-void A_star(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
+void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
 {
 	//struct List* h = initlist();
 
@@ -220,7 +216,7 @@ void A_star(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int
 		M[i] = 0;
  	}
 
- 	A_star_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); 	//Updating the heuristic list.
+ 	A_star_Heuristique(G,positions,heur,get_angle(positions, start, end),start); 	//Updating the heuristic list.
 
  	res_dist[start] = 0;
  	//update(h,start,0);
@@ -250,7 +246,7 @@ void A_star(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int
  			while (currElement != NULL) 		//Parcour of adjs of E.
  			{
  				adj = currElement->value;
-				new_cost = cost(G, gInfo, e, adj) + res_dist[e];
+				new_cost = cost(G, positions, e, adj) + res_dist[e];
 
  				if (!want_lighted) 
  				{
