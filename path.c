@@ -72,7 +72,7 @@ int is_empty(int* list, int len)
 	return 1;
 }
 
-int heuristic(Graph* G,int* M, double* dist)
+int get_next(Graph* G,int* M, double* dist)
 {
 	int res = -1;
 
@@ -111,7 +111,7 @@ void Dijkstra(Graph* G, int start, GraphInfo* gInfo, double* res_dist, int* res_
 	//================================================
 	while (!is_empty(M, G->order))
 	{
-		e = heuristic(G, M, res_dist);
+		e = get_next(G, M, res_dist);
 		if (e == -1) 
 			break;
 		
@@ -156,24 +156,72 @@ double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
 }
 
 
+double get_angle(GraphInfo* gInfo, int start, int s)
+{
+	double lat1;
+	double long1;
+	get_data(gInfo,s,&lat1,&long1);
+	double u_x = lat1;
+	double u_y = long1;
+	get_data(gInfo,start,&lat1,&long1);
+	u_x -= lat1;
+	u_y -= long1;
+	double res = atan2(u_x,u_y);
+	if (u_x * u_y < 0)
+		res += 180;
+	return res;
+}
+
+void A_start_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double angle_end, int start)
+{
+	double lat1;
+	double long1;
+	double lat2;
+	double long2;
+	double angle;
+	get_data(gInfo, start, &lat1, &long1);
+
+	for (int i = 0; i < G->order; ++i)
+	{
+		get_data(gInfo, i, &lat2, &long2);
+
+		if ((lat2 - lat2) * (long2 - long1) < 0)
+		angle = (angle_end - (atan2(long2-long1,lat2-lat1) + 180)) * 0.31830988618;
+		else
+		{
+			angle = (angle_end - atan2(long2-long1,lat2-lat1)) * 0.31830988618;
+		}
+
+		Heuristic[i] += get_distance(lat1,long1,lat2,long2) * angle * 2;
+	}
+}
+
 void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred)
 {
 	//struct List* h = initlist();
-	int iter = 0;
-	struct heap* h = initheap();
-	double oui;
-	double* heur = calloc(G->order, sizeof(double));
-	int* M = calloc(G->order,sizeof(int));
-	Value_list* currElement;
-	int adj;
-	double new_cost;
-	for (int i = 0; i < G->order; ++i)
+
+	int iter = 0;				//number of iteration.
+	double oui;					//trash of cost heap on pop
+	int adj;					//adjacent of e
+	double new_cost;			//new cost
+	Value_list* currElement;	//Use for adjLists
+
+	 	
+	double* heur = calloc(G->order, sizeof(double));	//Heuristic.
+	int* M = calloc(G->order,sizeof(int));				//Put True if the element have been traited.
+	struct heap* h = initheap();						//Init Heap
+
+
+	for (int i = 0; i < G->order; ++i)			//Init all vectors.
 	{
 		res_dist[i] = -1;
 		res_pred[i] = -1;
 		heur[i] = 0;
 		M[i] = 0;
  	}
+
+ 	A_start_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); //Updating the heuristic list.
+
  	res_dist[start] = 0;
  	//update(h,start,0);
  	heap_update(h,start, 0);
@@ -199,7 +247,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 		currElement = G->adjlists[e];
 		if (currElement != NULL)
  		{
- 			while (currElement != NULL)
+ 			while (currElement != NULL) 		//Parcour of adjs of E.
  			{
  				adj = currElement->value;
 				new_cost = cost(G, gInfo, e, adj) + res_dist[e];
@@ -210,6 +258,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 					//update(h, adj, res_dist[adj] + heur[adj]);
 					heap_update(h, adj, res_dist[adj] + heur[adj]);
 				}
+				
 
 				currElement = currElement->next;
  			}
