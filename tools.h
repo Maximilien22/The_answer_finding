@@ -43,6 +43,8 @@ struct Graph
 	Value_list** adjlists;
 	unsigned char* lit;
 	unsigned char* notLit;
+	char** nodeNames;
+	int* nodeNameID;
 	//Couple_list* pos;
 	// un name pr charque node
 	      
@@ -61,7 +63,7 @@ void addEdge(Graph* G,int s1,int s2);
 void freeCoupleList(Couple_list *Cpl);
 void freeValueList(Value_list *Vlist);
 void freeGraph(Graph* G);
-char* todot(Graph *G);
+//char* todot(Graph *G);
 double deg2rad(double deg);
 double rad2deg(double rad);
 Couple_list* getPos(Couple_list * pos, int x);

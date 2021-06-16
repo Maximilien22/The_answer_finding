@@ -21,10 +21,14 @@ Graph *iniGraph (int order)
 	graph->adjlists = calloc(graph->order, sizeof(Value_list));
 	graph->lit = calloc(graph->order, sizeof(unsigned char));
 	graph->notLit = calloc(graph->order, sizeof(unsigned char));
+	graph->nodeNames = calloc(graph->order, sizeof(char*));
+	graph->nodeNameID = calloc(graph->order, sizeof(int));
+	
 	
 	//graph->pos = ; // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
 	for(int i =0; i<order; i++){
 		graph->adjlists[i] = NULL;
+		graph->nodeNameID[i] = -1;
 	}
 	return graph;
 }
@@ -62,7 +66,7 @@ void addEdge(Graph* G,int s1,int s2)
 }
 
 
-char* todot(Graph *G){
+/*char* todot(Graph *G){
 	
     char* link = " -- ";
     char * dot = calloc (1000000,sizeof(char));
@@ -108,7 +112,7 @@ char* todot(Graph *G){
 
     return dot;
 
-}
+}*/
 
 
 Couple *iniCouple (double x, double y)
@@ -145,11 +149,13 @@ Value_list* iniValueList()
 void addToCoupleList(Couple_list* cpl, Couple* cp){
 
 	if (cpl->couple == NULL || ( cpl->couple->x == -1 && cpl->couple->y == -1 ) ) {
+		free(cpl->couple);
 		cpl->couple = cp;
 		return;
 	}
 
 	Couple_list* cpl_1 = iniCoupleList();
+	free(cpl_1->couple);
 	cpl_1->couple = cp;
 
 	while (cpl->next != NULL){
@@ -215,18 +221,25 @@ void freeCoupleList(Couple_list *Cpl)
 
 void freeGraph(Graph* G)
 {
+	unsigned char* M = calloc(G->order,sizeof(unsigned char));
  	for(int i = 0; i<G->order; i++)
- 	{
+ 	{	// on free des trucs deja frees
+		if(G->nodeNameID[i]!= -1 && M[G->nodeNameID[i]] == 0)
+		{
+			M[G->nodeNameID[i]] = 1;
+			free(G->nodeNames[i]);
+		}
+		
  		if(G->adjlists[i] != NULL)
 			freeValueList(G->adjlists[i]);
 	}
+	free(M);
+	free(G->nodeNameID);
+	free(G->nodeNames);
 	free(G->adjlists);
 	free(G->lit);
 	free(G->notLit);
-	//for (int i=0; i<G->order; i++){
-		//free(G->pos[i]);
-	//}
-	//free(G->pos);
+	
 	free(G);
 }
 
@@ -240,20 +253,3 @@ double rad2deg(double rad)
 {
   return (rad * 180 / pi);
 }
-
-
-
-/*
-int main(){ 
-	Graph * g = iniGraph(3);
-	g->pos[0] = iniCouple(545454,84848);
-	g->pos[1] = iniCouple(54,0.55);
-	g->pos[2] = iniCouple(-51.5,2652);
-	addEdge(g, 0,1);
-	addEdge(g, 2,2);
-	addEdge(g, 2,1);
-	char* td = todot(g);
-	printf("%s\n",td);
-	free(td);
-	freeGraph(g);
-}*/
