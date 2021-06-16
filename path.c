@@ -196,7 +196,7 @@ void A_start_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double a
 	}
 }
 
-void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred)
+void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
 {
 	//struct List* h = initlist();
 
@@ -220,7 +220,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 		M[i] = 0;
  	}
 
- 	A_start_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); //Updating the heuristic list.
+ 	A_start_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); 	//Updating the heuristic list.
 
  	res_dist[start] = 0;
  	//update(h,start,0);
@@ -251,14 +251,26 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  			{
  				adj = currElement->value;
 				new_cost = cost(G, gInfo, e, adj) + res_dist[e];
-				if (M[e] && (res_dist[adj] == -1 || new_cost < res_dist[adj]))
-				{
-					res_dist[adj] = new_cost;
+
+ 				if (!want_lighted) 
+ 				{
+					if (G->lit[adj] && M[e] && (res_dist[adj] == -1 || new_cost < res_dist[adj]))
+					{
+						res_dist[adj] = new_cost;
+						res_pred[adj] = e;
+						//update(h, adj, res_dist[adj] + heur[adj]);
+						heap_update(h, adj, res_dist[adj] + heur[adj]);
+					}
+
+ 				}
+ 				else if (M[e] && (res_dist[adj] == -1 || new_cost < res_dist[adj]))
+ 				{
+ 					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
 					//update(h, adj, res_dist[adj] + heur[adj]);
-					heap_update(h, adj, res_dist[adj] + heur[adj]);
-				}
-				
+					heap_update(h, adj, res_dist[adj] + heur[adj] * want_lighted);
+ 				}
+ 				
 
 				currElement = currElement->next;
  			}

@@ -81,10 +81,19 @@ int main (int argc, char** argv)
     double* dist = calloc(g->order,sizeof(double));
 
     struct List* list = initlist();
-    A_start(g, gInfo, start, end, dist, pred);
+    A_start(g, gInfo, start, end, dist, pred, 2);
     //Dijkstra(g, start, gInfo, dist, pred);
 
     double diiiist = get_min_way(start,end,pred,dist,list);
+    int a = end;
+    while (a != start)
+    {
+    	if (g->lit[a] == 0)
+    	{
+    		printf("Ueee chui un malade moi. Jsuis le numero %d \n",a);
+    	}
+    	a = pred[a];
+    }
 
     afficherListe(list);
     printf("Distance = %f\n", diiiist);
@@ -97,7 +106,6 @@ int main (int argc, char** argv)
 	//printf("%s\n",td);
 
 	
-
 
 	//displayMap(gInfo, g );
 	
