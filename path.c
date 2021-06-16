@@ -172,7 +172,7 @@ double get_angle(GraphInfo* gInfo, int start, int s)
 	return res;
 }
 
-void A_start_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double angle_end, int start)
+void A_star_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double angle_end, int start)
 {
 	double lat1;
 	double long1;
@@ -196,7 +196,7 @@ void A_start_Heuristique(Graph* G, GraphInfo* gInfo, double* Heuristic, double a
 	}
 }
 
-void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
+void A_star(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
 {
 	//struct List* h = initlist();
 
@@ -220,7 +220,7 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 		M[i] = 0;
  	}
 
- 	A_start_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); 	//Updating the heuristic list.
+ 	A_star_Heuristique(G,gInfo,heur,get_angle(gInfo, start, end),start); 	//Updating the heuristic list.
 
  	res_dist[start] = 0;
  	//update(h,start,0);
