@@ -7,6 +7,7 @@
 #include "list.h"
 #include "tools.h"
 #include "parsing.h"
+#include "heap.h"
 
 //Get x = longitude and y = latitude of a edge.
 void get_data(GraphInfo* gInfo, int i ,double* x, double* y)
@@ -157,8 +158,10 @@ double get_min_way(int start, int end,int* pred,double* dist,struct List* way)
 
 void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, int* res_pred)
 {
-	struct List* h = initlist();
-	int oui;
+	//struct List* h = initlist();
+	int iter = 0;
+	struct heap* h = initheap();
+	double oui;
 	double* heur = calloc(G->order, sizeof(double));
 	int* M = calloc(G->order,sizeof(int));
 	Value_list* currElement;
@@ -172,14 +175,14 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
 		M[i] = 0;
  	}
  	res_dist[start] = 0;
-
- 	update(h,start, 0);
+ 	//update(h,start,0);
+ 	heap_update(h,start, 0);
  	int e;
- 	while (h->next != NULL)
+ 	while (!heap_isempty(h))
  	{
- 		printf("AHHHH\n");
- 		h_pop(h,&e,&oui);
- 		printf("Processing : %d.\n", e);
+ 		heap_pop(h,&e,&oui);
+ 		//h_pop(h,&e,&oui);
+ 		iter++;
  		if (e == -1)
  			errx(1,"Destination not reachable.\n");
 
@@ -188,10 +191,9 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  			free(heur);
 
  			free(M);
-
+ 			printf("iter - %d\n",iter );
  			return;
  		}
- 		printf("Processing : %d.\n", e);
  		M[e] = 1;
 
 		currElement = G->adjlists[e];
@@ -199,20 +201,18 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  		{
  			while (currElement != NULL)
  			{
- 				printf("ADJ = %d ",currElement->value);
  				adj = currElement->value;
 				new_cost = cost(G, gInfo, e, adj) + res_dist[e];
-				printf("distance %f\n", new_cost);
 				if (M[e] && (res_dist[adj] == -1 || new_cost < res_dist[adj]))
 				{
 					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
-					update(h, adj, res_dist[adj] + heur[adj]);
+					//update(h, adj, res_dist[adj] + heur[adj]);
+					heap_update(h, adj, res_dist[adj] + heur[adj]);
 				}
 
 				currElement = currElement->next;
  			}
- 			printf("\n");
  		}
  	}
 
@@ -220,9 +220,12 @@ void A_start(Graph* G,GraphInfo* gInfo, int start, int end, double* res_dist, in
  		errx(1,"Destination not reachable.");
 
  	free(heur);
- 	while (h->next != NULL)
- 		h_pop(h,&e,&oui);
+ 	while (heap_isempty(h))
+ 		heap_pop(h,&e,&oui);
 
+ 	//while (h->next != NULL)
+ 	//	h_pop(h,&e,&oui);
+ 	printf("iter - %d\n",iter );
  	free(h);
  	free(M);
 }
