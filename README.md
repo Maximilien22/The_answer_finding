@@ -5,7 +5,7 @@ Contact : julien.lungyf@gmail.com
 Libraries:
 
 If you need to install libraries on linux, you can use the following commands
-"
+"                                                                                   
 sudo apt-get install libsdl2-dev                                         
 sudo apt-get install libsdl2-ttf-dev                                         
 "
