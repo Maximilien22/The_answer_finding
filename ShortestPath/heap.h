@@ -21,6 +21,6 @@ void heap_update(struct heap* h, int val, double cost);
 
 void heap_pop(struct heap* h, int* val, double* cost);
 
-void heap_print(struct heap* h, int t);
+void heap_print(struct heap* h);
 
 #endif
