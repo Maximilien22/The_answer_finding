@@ -191,7 +191,7 @@ void A_star_Heuristique(Graph* G, Couple** positions, double* Heuristic, double 
 
 void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
 {
-	//struct List* h = initlist();
+	struct List* h = initlist();
 
 	int iter = 0;				//number of iteration.
 	double oui;					//trash of cost heap on pop
@@ -202,7 +202,7 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 	 	
 	double* heur = calloc(G->order, sizeof(double));	//Heuristic.
 	int* M = calloc(G->order,sizeof(int));				//Put True if the element have been traited.
-	struct heap* h = initheap();						//Init Heap
+	//struct heap* h = initheap();						//Init Heap
 
 
 	for (int i = 0; i < G->order; ++i)			//Init all vectors.
@@ -216,13 +216,13 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  	A_star_Heuristique(G,positions,heur,get_angle(positions, start, end),start); 	//Updating the heuristic list.
 
  	res_dist[start] = 0;
- 	//update(h,start,0);
- 	heap_update(h,start, 0);
+ 	update(h,start,0);
+ 	//heap_update(h,start, 0);
  	int e;
- 	while (!heap_isempty(h))
+ 	while (h->next != NULL)
  	{
- 		heap_pop(h,&e,&oui);
- 		//h_pop(h,&e,&oui);
+ 		//heap_pop(h,&e,&oui);
+ 		h_pop(h,&e,&oui);
  		iter++;
  		if (e == -1)
  			errx(1,"Destination not reachable.\n");
@@ -250,13 +250,13 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 					{
 						res_dist[adj] = new_cost;
 						res_pred[adj] = e;
-						//update(h, adj, res_dist[adj] + heur[adj]);
-						int t = heur[adj];
-						if (t < 0)
-						{
-							t *= (-1);
-						}
-						heap_update(h, adj, res_dist[adj] + t);
+						update(h, adj, res_dist[adj] + heur[adj]);
+						//int t = heur[adj];
+						//if (t < 0)
+						//{
+						//	t *= (-1);
+						//}
+						//heap_update(h, adj, res_dist[adj] + t);
 					}
 
  				}
@@ -264,13 +264,13 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  				{
  					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
-					//update(h, adj, res_dist[adj] + heur[adj]);
-					int t = heur[adj] * want_lighted;
+					update(h, adj, res_dist[adj] + heur[adj] * want_lighted);
+					/*int t = heur[adj] * want_lighted;
 					if (t < 0)
 					{
 						t *= (-1);
 					}
-					heap_update(h, adj, res_dist[adj] + t);
+					heap_update(h, adj, res_dist[adj] + t);*/
  				}
  				
 
@@ -283,11 +283,11 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  		errx(1,"Destination not reachable.");
 
  	free(heur);
- 	while (heap_isempty(h))
- 		heap_pop(h,&e,&oui);
+ 	//while (heap_isempty(h))
+ 	//	heap_pop(h,&e,&oui);
 
- 	//while (h->next != NULL)
- 	//	h_pop(h,&e,&oui);
+ 	while (h->next != NULL)
+ 		h_pop(h,&e,&oui);
  	free(h);
  	free(M);
 }
