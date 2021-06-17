@@ -23,14 +23,47 @@ Graph *iniGraph (int order)
 	graph->notLit = calloc(graph->order, sizeof(unsigned char));
 	graph->nodeNames = calloc(graph->order, sizeof(char*));
 	graph->nodeNameID = calloc(graph->order, sizeof(int));
+	graph->hash_table = calloc(graph->order, sizeof(Value_list));
 	
 	
 	//graph->pos = ; // pr le i eme noeud, le i eme element de la liste labels, contient ses coordonées ( un couple de int)
 	for(int i =0; i<order; i++){
 		graph->adjlists[i] = NULL;
+		graph->hash_table[i] = iniValueList();
 		graph->nodeNameID[i] = -1;
 	}
 	return graph;
+}
+
+void addToCoupleList(Couple_list* cpl, Couple* cp){
+	if (cpl->couple == NULL || ( cpl->couple->x == -1 && cpl->couple->y == -1 ) ) {
+		cpl->couple = cp;
+		cpl->end = cpl;
+		return;
+	}
+	
+	Couple_list* cpl_1 = iniCoupleList();
+	cpl_1->couple = cp;
+	(cpl->end)->next = cpl_1;
+	cpl->end = cpl_1;
+
+}
+
+void addToValueList(Value_list* value_l, int newVal){
+	
+	if (value_l->value ==-1 && value_l->next == NULL ){
+		value_l->value = newVal;
+		value_l->end = value_l;
+		return;
+	}
+	
+	Value_list* new_vl = iniValueList();
+	new_vl->value = newVal;
+	
+	(value_l->end)->next = new_vl;
+	value_l->end = new_vl;
+	
+	
 }
 
 void __addOneEdge(Graph* G, int s_from, int s_to){
@@ -114,6 +147,9 @@ void addEdge(Graph* G,int s1,int s2)
 
 }*/
 
+int hash(unsigned long file_id, Graph* g){
+	return (int) ( file_id% ((unsigned long)(g->order)));
+}
 
 Couple *iniCouple (double x, double y)
 {
@@ -132,7 +168,7 @@ Couple_list* iniCoupleList()
 	
 	list->next = NULL;
 	list->couple = iniCouple(-1, -1);
-
+	list->end = NULL;
 	return list;
 }
 
@@ -142,29 +178,12 @@ Value_list* iniValueList()
 	
 	list->next = NULL;
 	list->value = -1;
+	list->end = NULL;
 
 	return list;
 }
 
-void addToCoupleList(Couple_list* cpl, Couple* cp){
 
-	if (cpl->couple == NULL || ( cpl->couple->x == -1 && cpl->couple->y == -1 ) ) {
-		free(cpl->couple);
-		cpl->couple = cp;
-		return;
-	}
-
-	Couple_list* cpl_1 = iniCoupleList();
-	free(cpl_1->couple);
-	cpl_1->couple = cp;
-
-	while (cpl->next != NULL){
-		cpl=cpl->next;
-	}
-
-	cpl->next = cpl_1;
-
-}
 
 Couple_list* getPos(Couple_list* cpl, int x){
 
@@ -195,10 +214,19 @@ int length(Value_list *list){
 
 }
 
+void freeHashTable(Graph* g){
+	
+	for (int i=0; i<g->order; i++)
+		freeValueList((g->hash_table)[i]);
+	
+	free(g->hash_table);
+	
+}
+
 void freeValueList(Value_list *Cpl)
 {
-	if(Cpl == NULL)
-		err(1,"Error while trying to free Value_list");
+	/*if(Cpl == NULL)
+		err(1,"Error while trying to free Value_list");*/
 
 	if (Cpl->next != NULL){
 		freeValueList(Cpl->next);
@@ -210,17 +238,19 @@ void freeCoupleList(Couple_list *Cpl)
 {
 	if(Cpl == NULL)
 		err(1,"Error while trying to free Couple_list");
-
-	if (Cpl->next != NULL){
-		freeCoupleList(Cpl->next);
+	
+	while(Cpl!= NULL){
+		Couple_list *tmp = Cpl->next;
+		free(Cpl->couple);
+		free(Cpl);
+		Cpl = tmp;
 	}
-	free(Cpl->couple);
-	free(Cpl);
 
 }
 
 void freeGraph(Graph* G)
 {
+	
 	unsigned char* M = calloc(G->order,sizeof(unsigned char));
  	for(int i = 0; i<G->order; i++)
  	{	// on free des trucs deja frees
@@ -239,6 +269,8 @@ void freeGraph(Graph* G)
 	free(G->adjlists);
 	free(G->lit);
 	free(G->notLit);
+	
+	
 	
 	free(G);
 }

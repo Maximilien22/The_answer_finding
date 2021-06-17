@@ -33,7 +33,8 @@ int main ()
 	Graph *g = NULL;
 	
 	build_Graph_GraphInfo(&gInfo, &g, &file );
-
+	
+	freeHashTable(g);
 
 	// -------------affiche le todot du graph ---------------------
 	/*char * td = todot(g);
@@ -44,8 +45,6 @@ int main ()
 */
 	displayMap(gInfo, g );
 	
-	
-
 	// --------------free--------------
 
 	freeGraphInfo(gInfo);

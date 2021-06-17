@@ -18,6 +18,7 @@ struct Couple_list
 {
 	   Couple* couple;
 	   Couple_list *next;
+	   Couple_list *end;
 };
 
 
@@ -27,10 +28,12 @@ struct Value_list
 {
 	   int value;
 	   Value_list *next;
+	   Value_list *end;
 };
 
 Couple_list *iniCoupleList();
 void addToCoupleList(Couple_list* Cpl, Couple* cp);
+void addToValueList(Value_list* value_l, int newVal);
 Couple* getFromCoupleList(Couple_list* Cpl, int idx);
 Value_list *iniValueList();
 
@@ -45,9 +48,7 @@ struct Graph
 	unsigned char* notLit;
 	char** nodeNames;
 	int* nodeNameID;
-	//Couple_list* pos;
-	// un name pr charque node
-	      
+	Value_list** hash_table;
 };
 
 
@@ -63,9 +64,11 @@ void addEdge(Graph* G,int s1,int s2);
 void freeCoupleList(Couple_list *Cpl);
 void freeValueList(Value_list *Vlist);
 void freeGraph(Graph* G);
+void freeHashTable(Graph* G);
 //char* todot(Graph *G);
 double deg2rad(double deg);
 double rad2deg(double rad);
 Couple_list* getPos(Couple_list * pos, int x);
+int hash(unsigned long file_id, Graph* g);
 
 #endif

@@ -33,7 +33,6 @@
 
 char* file_name = NULL;
 
-
 int isString(char* str_request, char* str_regex  ){
 
    int err;
@@ -214,6 +213,7 @@ void create_node(char c, GraphInfo* gInfo, int* node_flags, unsigned long* currI
 		node_flags[id_done] = 1;
 		vector_add(gInfo->correspondance, *currId);
 		*currId = 0;
+		
 	}
 
 	else if (node_flags[t_read]){
@@ -347,34 +347,58 @@ GraphInfo * create_correspondance(){
 	return gInfo;
 }
 
-int getCorrespondingId(int size, vector * correspondance, unsigned long id){
-	int i=0; 
-	while (i<size){
-		if (correspondance->data[i] == id)
-			return i;
-
-		i++;
+int getCorrespondingNodeId(vector * correspondance, Graph* g,  unsigned long id){
+	Value_list* vl = (g->hash_table)[hash(id, g)];
+	
+	while (vl !=NULL){
+		
+		if (((correspondance->data)[vl->value]) == id ){
+			
+			return vl->value;
+		}
+		
+		vl = vl->next;
 	}
+	
+	
+	/*Value_list* v2 = (g->hash_table)[hash(id, g)];
+	if (v2 == NULL){
+		printf("\nv2 is NULL\n");
+	}
+	while (v2 !=NULL){
+		printf(" -> %i",v2->value);
+		
+		
+		v2 = v2->next;
+	}*/
+	
+	for (int i=0; i<g->order; i++){
+		if ((correspondance->data)[i] == id)
+			return i;
+	}
+	
 	return -1;
 }
 
 void creates_edges(GraphInfo * gInfo, Graph* G, unsigned long* tab, int size, unsigned char isLit,unsigned char isNotLit, char* wayName, unsigned long wayNamei){
 	
-	
 	for(int i=0;i<size-1;i++){
-		int id = getCorrespondingId(G->order, gInfo->correspondance, tab[i]);
-		G->lit[id] = G->lit[id] || isLit;
 		
+		int id = getCorrespondingNodeId(gInfo->correspondance,G, tab[i]);
+		int id2 = getCorrespondingNodeId(gInfo->correspondance,G, tab[i+1]);
 		
-		if (G->nodeNames[id] == NULL)// On change seulement si il n'a pas été initialisé
-		{
-			G->nodeNames[id] = wayName;
-			G->nodeNameID[id] = wayNamei;
+		if (id!=-1 && id2!=-1){
+			G->lit[id] = G->lit[id] || isLit;
+		
+			if (G->nodeNames[id] == NULL)// On change seulement si il n'a pas été initialisé
+			{
+				G->nodeNames[id] = wayName;
+				G->nodeNameID[id] = wayNamei;
+			}
+		
+			G->notLit[id] = isNotLit ;
+			addEdge(G, id, id2 );
 		}
-
-		
-		G->notLit[id] = isNotLit ;
-		addEdge(G, id, getCorrespondingId(G->order, gInfo->correspondance, tab[i+1]) );
 	}
 }
 
@@ -411,7 +435,6 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 	size_t wayTxtSize = 1;
 	
 	unsigned long wayNamei = 0;
-
 	if (fichier != NULL){
 
 		while( !feof(fichier) ) {
@@ -474,6 +497,10 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 	
 						creates_edges(gInfo, G,  nodes_of_way->data, nodes_of_way->size, isLit, isNotLit, wayName, wayNamei);
 						wayNamei++;
+						
+						/*if (wayNamei%1000 ==0)
+							printf("way = %li\n", wayNamei);*/
+						
 						vector_reset(nodes_of_way);
 						
 						memset(wayTxt,0	,wayTxtSize);
@@ -502,9 +529,16 @@ GraphInfo * create_way(GraphInfo * gInfo, Graph* G){
 	return gInfo;
 }
 
+void create_hash_table(Graph* g, GraphInfo* gInfo){
+	
+	for (int i=0; i<(g->order); i++){
+		addToValueList((g->hash_table)[hash((gInfo->correspondance->data)[i] , g )], i);
+	}
+}
 
 Graph* create_graph(GraphInfo* gInfo){
 	Graph * G = iniGraph(gInfo->correspondance->size);
+	
 	return G;
 }
 
@@ -513,6 +547,7 @@ void build_Graph_GraphInfo(GraphInfo ** gInfo, Graph **g, char** file_n){
 	
 	*gInfo = create_correspondance();
 	*g = create_graph(*gInfo);
+	create_hash_table(*g,*gInfo);
 	create_way(*gInfo, *g);
 }
 

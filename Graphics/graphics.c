@@ -83,9 +83,10 @@ void writeText(char* txt, int x, int y){
 	
 	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
 
+	
 
 
-
+	//TODO SDL_FreeRect(Message_rect);
 	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyTexture(Message);
 
