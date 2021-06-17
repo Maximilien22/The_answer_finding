@@ -1,15 +1,15 @@
 # The_answer_finding
-AUTHORS : Maximilien C. , Valentin D., Florian L., Julien L.
-Contact : julien.lungyf@gmail.com
+AUTHORS : Maximilien C. , Valentin D., Florian L., Julien L.\n
+Contact : julien.lungyf@gmail.com\n
 
-Libraries:
+Libraries:\n
 
-If you need to install libraries on linux, you can use the following commands
-"
-sudo apt-get install libsdl2-dev
-sudo apt-get install libsdl2-ttf-dev 
-"
+If you need to install libraries on linux, you can use the following commands\n
+"\n
+sudo apt-get install libsdl2-dev\n
+sudo apt-get install libsdl2-ttf-dev\n 
+"\n
 
-Description:
-A project to find the shortest path between 2 points, while 
+Description:\n
+A project to find the shortest path between 2 points,\n while 
 only taking lit roads.
