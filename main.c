@@ -3,14 +3,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
-#include "parsing.h"
-#include "tools.h"
-#include "path.h"
-#include "vector.h"
-#include "list.h"
-#include "graphics.h"
+#include "Parsing/parsing.h"
+#include "Parsing/tools.h"
+#include "Parsing/vector.h"
 
-char* file = "map.osm";
+#include "ShortestPath/path.h"
+#include "ShortestPath/list.h"
+#include "Graphics/graphics.h"
+
+char* file = "Maps/map.osm";
 
 
 
@@ -36,21 +37,17 @@ int main ()
 
 	// -------------affiche le todot du graph ---------------------
 	/*char * td = todot(g);
-	printf("%s\n",td);*/
+
 
 	
 
-
+*/
 	displayMap(gInfo, g );
 	
 	
-	
-	/*free(dist);
-	free(pred);*/
-	
+
 	// --------------free--------------
 
-	//free(td);
 	freeGraphInfo(gInfo);
 	freeGraph(g);
 	

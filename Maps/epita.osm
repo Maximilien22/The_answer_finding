@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="CGImap 0.8.3 (2617061 spike-08.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+ <bounds minlat="45.7544300" minlon="4.8568400" maxlat="45.7554900" maxlon="4.8595600"/>
+ <node id="195259" visible="true" version="6" changeset="85196835" timestamp="2020-05-14T10:54:56Z" user="Lyon-St-Clair" uid="9060372" lat="45.7511969" lon="4.8599095"/>
+ <node id="21608349" visible="true" version="6" changeset="42501971" timestamp="2016-09-28T18:47:54Z" user="Olyon" uid="1443767" lat="45.7725633" lon="4.8541826"/>
+ <node id="21609036" visible="true" version="4" changeset="55219777" timestamp="2018-01-06T19:29:21Z" user="Roman Guy" uid="77947" lat="45.7729500" lon="4.8583439"/>
+ <node id="21609039" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:54Z" user="Olyon" uid="1443767" lat="45.7734377" lon="4.8525221"/>
+ <node id="21609042" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:54Z" user="Olyon" uid="1443767" lat="45.7733203" lon="4.8520685"/>
+ <node id="21609045" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:54Z" user="Olyon" uid="1443767" lat="45.7735909" lon="4.8513936"/>
+ <node id="21609048" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:54Z" user="Olyon" uid="1443767" lat="45.7742253" lon="4.8513466"/>
+ <node id="21610794" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:55Z" user="Olyon" uid="1443767" lat="45.7754061" lon="4.8484282"/>
+ <node id="21610805" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:55Z" user="Olyon" uid="1443767" lat="45.7753415" lon="4.8489807"/>
+ <node id="21610826" visible="true" version="4" changeset="42501971" timestamp="2016-09-28T18:47:55Z" user="Olyon" uid="1443767" lat="45.7768522" lon="4.8453581"/>
+ 
+
+  <way id="868020262" visible="true" version="1" changeset="93708904" timestamp="2020-11-07T14:22:19Z" user="gileri" uid="593214">
+  <nd ref="195259"/>
+  <nd ref="21608349"/>
+  <nd ref="21610826"/>
+  <nd ref="21610794"/>
+  <tag k="footway" v="crossing"/>
+  <tag k="highway" v="footway"/>
+  <tag k="lit" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
+
+
+ <way id="868020262" visible="true" version="1" changeset="93708904" timestamp="2020-11-07T14:22:19Z" user="gileri" uid="593214">
+  <nd ref="21610794"/>
+  <nd ref="21610805"/>
+  <nd ref="195259"/>
+  <tag k="footway" v="crossing"/>
+  <tag k="highway" v="footway"/>
+  <tag k="lit" v="yes"/>
+  <tag k="surface" v="asphalt"/>
+ </way>
