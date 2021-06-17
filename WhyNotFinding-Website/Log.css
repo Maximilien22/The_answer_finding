@@ -12,7 +12,7 @@
 
 .u-section-1 .u-image-1 {
   min-height: 400px;
-  background-image: url("images/googlemaps_paris.jpg");
+  background-image: url("images/mapDisplay.png");
   background-position: 50% 50%;
 }
 
@@ -72,6 +72,7 @@
   height: 704px;
   margin-top: 56px;
   margin-bottom: 0;
+  margin-right: 0;
 }
 
 .u-section-1 .u-text-6 {
@@ -107,6 +108,10 @@
 
   .u-section-1 .u-text-4 {
     margin-right: 282px;
+  }
+
+  .u-section-1 .u-image-2 {
+    margin-right: initial;
   }
 }
 

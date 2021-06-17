@@ -12,8 +12,9 @@
 
 .u-section-1 .u-image-1 {
   min-height: 400px;
-  background-image: url("images/googlemaps_paris.jpg");
+  background-image: url("images/mapDisplay.png");
   background-position: 50% 50%;
+  background-size: 130%;
 }
 
 .u-section-1 .u-container-layout-1 {
