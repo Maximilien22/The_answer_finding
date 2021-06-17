@@ -86,7 +86,7 @@ int get_next(Graph* G,int* M, double* dist)
 	return res;
 }
 
-void Dijkstra(Graph* G, int start, Couple** positions, double* res_dist, int* res_pred)
+void Dijkstra(Graph* G, int start, int end, Couple** positions, double* res_dist, int* res_pred)
 {
 	//=====================INIT=======================
 	int* M = calloc(G->order,sizeof(int));
@@ -111,6 +111,11 @@ void Dijkstra(Graph* G, int start, Couple** positions, double* res_dist, int* re
 		e = get_next(G, M, res_dist);
 		if (e == -1) 
 			break;
+		if(e == end)
+		{
+			free(M);
+			return;
+		}
 		
 		M[e] = -1;
 
@@ -222,10 +227,13 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  	while (!heap_isempty(h))
  	{
  		heap_pop(h,&e,&oui);
+		
  		//h_pop(h,&e,&oui);
  		iter++;
- 		if (e == -1)
- 			errx(1,"Destination not reachable.\n");
+ 		if (e == -1){
+ 			res_dist[end] =-1;
+			return;
+		}
 
  		if (e == end)
  		{
@@ -251,6 +259,11 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 						res_dist[adj] = new_cost;
 						res_pred[adj] = e;
 						//update(h, adj, res_dist[adj] + heur[adj]);
+						
+						/*if (t < 0)
+						{
+							t *= (-1);
+						}*/
 						heap_update(h, adj, res_dist[adj] + heur[adj]);
 					}
 
@@ -259,7 +272,12 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  				{
  					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
-					//update(h, adj, res_dist[adj] + heur[adj]);
+					//update(h, adj, res_dist[adj] + heur[adj] * want_lighted);
+					/*int t = heur[adj] * want_lighted;
+					if (t < 0)
+					{
+						t *= (-1);
+					}*/
 					heap_update(h, adj, res_dist[adj] + heur[adj] * want_lighted);
  				}
  				
@@ -269,15 +287,13 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  		}
  	}
 
- 	if (res_dist[end] == -1)
- 		errx(1,"Destination not reachable.");
 
  	free(heur);
- 	while (heap_isempty(h))
+ 	while (!heap_isempty(h))
  		heap_pop(h,&e,&oui);
 
  	//while (h->next != NULL)
- 	//	h_pop(h,&e,&oui);
+ 		//h_pop(h,&e,&oui);
  	free(h);
  	free(M);
 }

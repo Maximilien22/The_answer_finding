@@ -181,6 +181,7 @@ void stab(struct heap* h, int r)
 			{
 				stab(h->right, 1);
 				h->right->left = h->left;
+				h->left = h->right;
 			}
 			else
 			{
@@ -192,7 +193,6 @@ void stab(struct heap* h, int r)
 	}
 	else
 	{
-
 		if (h->left == NULL)
 		{
 			h->left = h->right;
@@ -207,6 +207,7 @@ void stab(struct heap* h, int r)
 			{
 				stab(h->right, 1);
 				h->right->left = h->left;
+				h->left = h->right;
 			}
 			else
 			{
@@ -243,7 +244,6 @@ void stabr(struct heap* h)
 		}
 	}
 }
-
 void stabl(struct heap* h)
 {
 	if (h->left == NULL)
@@ -274,7 +274,7 @@ void heap_pop(struct heap* h, int* val, double* cost)
 {
 	if (h->right == NULL)
 	{
-		printf("heap vide\n");
+		//printf("heap vide\n");
 		return;
 	}
 
@@ -303,7 +303,7 @@ void heap_pop(struct heap* h, int* val, double* cost)
 		}
 		else
 		{
-			if (h->right->right->val < h->right->left->val)
+			if (h->right->right->cost < h->right->left->cost)
 			{
 				stab(h->right->right, 1);
 				
@@ -342,7 +342,7 @@ void _printheap(struct heap* h, int t)
 	}
 }
 
-void heap_print(struct heap* h, int t)
+void heap_print(struct heap* h)
 {
 	if (h->right == NULL)
 	{
@@ -350,20 +350,20 @@ void heap_print(struct heap* h, int t)
 		return;
 	}
 	h = h->right;
-	for (int i = 0; i < t; ++i)
+	/*for (int i = 0; i < t; ++i)
 	{
 		printf("-");
 	}
-
+	*/
 	printf("%i\n", h->val);
 	if (h->left != NULL)
 	{
 		//printf("l");
-		_printheap(h->left, t + 1);
+		_printheap(h->left, 1);
 	}
 	if (h->right != NULL)
 	{
 		//printf("r");
-		_printheap(h->right, t + 1);
+		_printheap(h->right, 1);
 	}
 }
