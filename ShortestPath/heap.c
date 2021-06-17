@@ -181,6 +181,7 @@ void stab(struct heap* h, int r)
 			{
 				stab(h->right, 1);
 				h->right->left = h->left;
+				h->left = h->right;
 			}
 			else
 			{
@@ -206,6 +207,7 @@ void stab(struct heap* h, int r)
 			{
 				stab(h->right, 1);
 				h->right->left = h->left;
+				h->left = h->right;
 			}
 			else
 			{
