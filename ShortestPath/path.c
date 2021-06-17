@@ -251,7 +251,12 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 						res_dist[adj] = new_cost;
 						res_pred[adj] = e;
 						//update(h, adj, res_dist[adj] + heur[adj]);
-						heap_update(h, adj, res_dist[adj] + heur[adj]);
+						int t = heur[adj];
+						if (t < 0)
+						{
+							t *= (-1);
+						}
+						heap_update(h, adj, res_dist[adj] + t);
 					}
 
  				}
@@ -260,7 +265,12 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  					res_dist[adj] = new_cost;
 					res_pred[adj] = e;
 					//update(h, adj, res_dist[adj] + heur[adj]);
-					heap_update(h, adj, res_dist[adj] + heur[adj] * want_lighted);
+					int t = heur[adj] * want_lighted;
+					if (t < 0)
+					{
+						t *= (-1);
+					}
+					heap_update(h, adj, res_dist[adj] + t);
  				}
  				
 
