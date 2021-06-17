@@ -196,7 +196,7 @@ void A_star_Heuristique(Graph* G, Couple** positions, double* Heuristic, double 
 
 void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, int* res_pred, unsigned char want_lighted) // si Want_lighted == 0 , veut full light
 {
-	struct List* h = initlist();
+	//struct List* h = initlist();
 
 	int iter = 0;				//number of iteration.
 	double oui;					//trash of cost heap on pop
@@ -207,7 +207,7 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 	 	
 	double* heur = calloc(G->order, sizeof(double));	//Heuristic.
 	int* M = calloc(G->order,sizeof(int));				//Put True if the element have been traited.
-	//struct heap* h = initheap();						//Init Heap
+	struct heap* h = initheap();						//Init Heap
 
 
 	for (int i = 0; i < G->order; ++i)			//Init all vectors.
@@ -221,10 +221,10 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
  	A_star_Heuristique(G,positions,heur,get_angle(positions, start, end),start); 	//Updating the heuristic list.
 
  	res_dist[start] = 0;
- 	update(h,start,0);
- 	//heap_update(h,start, 0);
+ 	//update(h,start,0);
+ 	heap_update(h,start, 0);
  	int e;
- 	while (h->next != NULL)
+ 	while (!heap_isempty(h))
  	{
  		heap_pop(h,&e,&oui);
 		
@@ -295,8 +295,10 @@ void A_star(Graph* G,Couple** positions, int start, int end, double* res_dist, i
 
 
  	free(heur);
- 	while (h->next != NULL)
- 		h_pop(h,&e,&oui);
+ 	//while (h->next != NULL)
+ 	//	h_pop(h,&e,&oui);
+
+
  	free(h);
  	free(M);
 }
