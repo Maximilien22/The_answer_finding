@@ -17,9 +17,9 @@ SDL_Renderer* renderer = NULL;
 
 Uint8 background [4] = {0,0,0, 0};
 Uint8 path_color [4] = {255,255,255, 255};
-Uint8 not_way_color [4] = {100,100,100, 255};
+Uint8 not_way_color [4] = {50,50,50, 255};
 Uint8 litColor [4] = {255,215,0, 150};
-Uint8 notlitColor [4] = {100,100,100, 255};
+Uint8 notlitColor [4] = {50,50,50, 255};
 SDL_Color txtColor = {255, 255, 255, 0};
 int txtSize = 50;
 
