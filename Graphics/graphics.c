@@ -21,7 +21,6 @@ Uint8 not_way_color [4] = {100,100,100, 255};
 Uint8 litColor [4] = {255,215,0, 150};
 Uint8 notlitColor [4] = {100,100,100, 255};
 SDL_Color txtColor = {255, 255, 255, 0};
-SDL_Color txtColorWantLighted = {255,69,0, 0};
 int txtSize = 50;
 
 
@@ -52,7 +51,6 @@ int node2Path = -1;
 char * txt1_in_box = "";
 char * txt2_in_box = "";
 char * txt3_in_box = "";
-int want_lighted = 0;
 
 
 void draw_graph();
@@ -65,7 +63,7 @@ int getNodeAccordingToPos(int x, int y);
 double toAbs (double x);
 struct List* getShortestPath(int start, int end, double* dist );
 
-void writeText(char* txt, int x, int y, SDL_Color txtColor){
+void writeText(char* txt, int x, int y){
 	
 	int len= 0;
 	while (txt[len] != 0){
@@ -105,8 +103,8 @@ struct List* getShortestPath(int start, int end, double* distResult){
 	int* pred = calloc( g->order,sizeof(int));
 
 	
-	//Dijkstra(g,start, end,&positions,dist,pred);
-	A_star(g,&positions, start, end, dist, pred, !want_lighted);
+	Dijkstra(g,start,&positions,dist,pred);
+	//A_star(g,&positions, start, end, dist, pred, 1);
 
 
 
@@ -241,16 +239,9 @@ void draw_path(){
 }
 
 void draw_txt_box(){
-	writeText(txt1_in_box, 10,10, txtColor);
-	writeText(txt2_in_box, 10, 45, txtColor);
-	writeText(txt3_in_box, 10, 110, txtColor);
-	
-	char* txt = "Passage par rues eclairees";
-	if (!want_lighted)
-		txt = "";
-	writeText(txt, 10, current_height- 40, txtColorWantLighted);
-	
-	
+	writeText(txt1_in_box, 10,10);
+	writeText(txt2_in_box, 10, 45);
+	writeText(txt3_in_box, 10, 80);
 	
 	SDL_RenderPresent(renderer);
 }
@@ -280,17 +271,13 @@ void draw_graph(){
 					double y2 = screenPosition[adjlists->value].y ;
 				
 				
-					if ( (x1>=0 && x1<=current_width && y1>=0 && y1<= current_height) ||
-					( x2>=0 && x2<=current_width && y1>=0 && y1<= current_height))
-					{
-						if (g->lit[i] && g->lit[adjlists->value])
-							draw_line(x1, y1, x2, y2, litColor,0);
-						else if (g->notLit[i] && g->notLit[adjlists->value])
-							draw_line(x1, y1, x2, y2, notlitColor,0);
-						else
-							draw_line(x1, y1, x2, y2, not_way_color,0);
+					if (g->lit[i] && g->lit[adjlists->value])
+						draw_line(x1, y1, x2, y2, litColor,0);
+					else if (g->notLit[i] && g->notLit[adjlists->value])
+						draw_line(x1, y1, x2, y2, notlitColor,0);
+					else
+						draw_line(x1, y1, x2, y2, not_way_color,0);
 					
-					}
 				}
 				
 			adjlists = adjlists->next;
@@ -425,10 +412,6 @@ void check_event(){
 					
 						center_lon += (move_change/zoom);
 						recalculateScreenPositions();
-						draw_graph();
-						break;
-					case SDLK_l:
-						want_lighted=!want_lighted;
 						draw_graph();
 						break;
 						
